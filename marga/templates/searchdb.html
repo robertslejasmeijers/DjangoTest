@@ -1,0 +1,69 @@
+
+<!DOCTYPE html>
+
+<link rel="stylesheet" href="/static/main.css"/>
+
+<html>
+<head>
+    <title>Meklēt datubāzē</title>
+</head>
+<body>
+
+    
+       
+    <h1>Meklē preces:</h1>
+    <form method = "post">
+        {% csrf_token %}
+       Ievadi preces nosaukumu:
+       <input name = "itemname" />
+       <input type = "submit" />
+    </form>
+
+    <h1>Meklēju datubāzē "{{ searched }}"</h1>
+
+ 
+
+<table>
+    <tr>
+        <th>Veikala ID</th>
+        <th>Nosaukums</th>
+        <th>Cena</th>
+        <th>Cena bez atl.</th>
+        <th>Datums</th>
+        <th>Bilde</th>     
+      </tr>
+
+{% for r in reply %}
+
+<tr>
+
+    {% if r.store_id == 1 %}
+    <td class="store_img"><img src="/static/logo_rimi.png"></td></td>
+    {% endif %}
+
+    {% if r.store_id == 2 %}
+    <td class="store_img"><img src="/static/logo_barbora.jpg"></td></td>
+    {% endif %}
+
+    {% if r.store_id == 3 %}
+    <td class="store_img"><img src="/static/logo_maxima_sirsniiga.jpg"></td></td>
+    {% endif %}
+    
+    <td class="item_name">{{ r.name }}</td>
+
+    <td class="item_price">{{ r.price }}</td>
+   
+    <td class="item_oldprice">{{ r.price_old }}</td>
+
+    <td class="date_time_grab">{{ r.date_time_grab }}</td>
+  
+    <td class="item_img"><img src="{{ r.link_to_picture }}"></td>
+    
+</tr>
+
+{% endfor %}
+
+</table>
+
+</body>
+</html>

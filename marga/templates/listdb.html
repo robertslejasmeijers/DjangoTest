@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Skatīt datubāzi</title>
+</head>
+<body>
+
+<h1>Skaties, kas datubāzē</h1>
+
+<table>
+    <tr>
+        <th>Veikala ID</th>
+        <th>Nosaukums</th>
+        <th>Cena</th>
+        <th>Cena bez atl.</th>
+        <th>Datums</th>
+        <th>Bilde</th>     
+      </tr>
+
+{% for product in products %}
+
+<tr>
+
+    <td>{{ product.store_id }}</td>
+    
+    <td>{{ product.name }}</td>
+
+    <td>{{ product.price }}</td>
+   
+    <td>{{ product.price_old }}</td>
+
+    <td>{{ product.date_time_grab }}</td>
+  
+    <td><img src="{{ product.link_to_picture }}" style="width:97px;height:74px;"></td>
+    
+</tr>
+
+{% endfor %}
+
+</table>
+
+</body>
+</html>

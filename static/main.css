@@ -1,0 +1,13 @@
+body {font-family: Arial}
+.item_name {color:#000}
+.item_price {color:#F00}
+.item_oldprice {color: #00C;}
+.discount_period {color: #080;}
+.date_time_grab {color:#000}
+.store_img img {width:84px;height:47px;}
+.item_img img {width:84px;height:47px;}
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
