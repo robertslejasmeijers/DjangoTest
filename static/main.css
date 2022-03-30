@@ -2,6 +2,7 @@ body {font-family: Arial}
 .item_name {color:#000}
 .item_price {color:#F00}
 .item_oldprice {color: #00C;}
+.item_price_per_unit {color:rgb(119, 79, 4)}
 .discount_period {color: #080;}
 .date_time_grab {color:#000}
 .store_img img {width:84px;height:47px;}

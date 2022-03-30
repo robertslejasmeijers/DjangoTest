@@ -25,10 +25,11 @@
 
 <table>
     <tr>
-        <th>Veikala ID</th>
+        <th>Veikals</th>
         <th>Nosaukums</th>
         <th>Cena</th>
         <th>Cena bez atl.</th>
+        <th>Cena par vien.</th>
         <th>Datums</th>
         <th>Bilde</th>     
       </tr>
@@ -54,6 +55,8 @@
     <td class="item_price">{{ r.price }}</td>
    
     <td class="item_oldprice">{{ r.price_old }}</td>
+
+    <td class="item_price_per_unit">{{ r.price_per_unit }}</td>
 
     <td class="date_time_grab">{{ r.date_time_grab }}</td>
   

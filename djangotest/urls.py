@@ -27,7 +27,9 @@ urlpatterns = [
     path("grab_barbora/", views.grab_barbora),
     path("grab_rimi/", views.grab_rimi),
     path("searchdb/", views.searchdb),
-        
+    path("addurltodb/", views.addurltodb),
+    path("addinfotodb/", views.addinfotodb),
+    path("addedurls/", views.addedurls),
 ]
 
 urlpatterns += router.urls

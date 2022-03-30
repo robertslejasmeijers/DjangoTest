@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<link rel="stylesheet" href="/static/main.css"/>
+
+<html>
+<head>
+    <title>Pievienot datubāzei URL</title>
+</head>
+<body>
+    <h4>
+        <a href="/">Atgriezties sākumlapā</a>
+    </h4>
+
+    <form method = "post">
+        {% csrf_token %}
+        Lai dzēstu saiti, ievadi ID (lai dzēstu visas saites ievadi "visas"):
+       <input name = "deleteurl" />
+       <input type = "submit" />
+    </form>
+
+    <br>
+
+    {{ reply }}
+
+    <h2>Pievienotās saites:</h2>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Veikals</th>
+            <th>Saite</th>     
+          </tr>
+    
+    {% for a in allurls %}
+
+    <tr>
+
+        <td class="item_name">{{ a.id }}</td>
+
+        {% if a.store_id == 1 %}
+        <td class="store_img"><img src="/static/logo_rimi.png"></td></td>
+        {% endif %}
+    
+        {% if a.store_id == 2 %}
+        <td class="store_img"><img src="/static/logo_barbora.jpg"></td></td>
+        {% endif %}
+
+        {% if a.store_id == 3 %}
+        <td class="store_img"><img src="/static/logo_maxima_sirsniiga.jpg"></td></td>
+        {% endif %}
+
+        <td class="item_name">{{ a.url }}</td>
+    </tr>
+
+    {% endfor %}
+
+    </table>
+
+</body>
+</html>

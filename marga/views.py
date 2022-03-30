@@ -4,7 +4,7 @@ from django.http import HttpRequest
 import requests
 from bs4 import BeautifulSoup as bs
 
-from marga.models import products
+from marga.models import products, urls
 from rest_framework.viewsets import ModelViewSet
 
 from marga.serializers import ProductsSerializer
@@ -21,20 +21,39 @@ def addurltodb(response):
             reply = "Saite ir nepareiza. Pievienot var tikai Rimi vai Barbora produkta vai produktu grupas saiti."
             print(reply)
         elif "https://www.rimi.lv/e-veikals/" in searched:
-            u = (urls_rimi(url=searched))
+            u = (urls(url=searched, store_id=1))
             u.save()
             grab_rimi(str(searched))
             reply = "Rimi saite ir pievienota."
             print(reply)
         elif "https://barbora.lv/" in searched:
-            u = (urls_barbora(url=searched))
+            u = (urls(url=searched, store_id=2))
             u.save()
             grab_barbora(str(searched))
             reply = "Barbora saite ir pievienota."
             print(reply)
-        return render (response, "addurltodb.html")
+        allurls = urls.objects.all()
+        return render (response, "addurltodb.html", {"reply": reply, "searched": searched, "allurls": allurls})
     else:
         return render (response, "addurltodb.html")
+
+def addedurls(response):
+    allurls = urls.objects.all()
+    if response.method == "POST":
+        searched = (response.POST)["deleteurl"]
+        if searched == "visas":
+            urls.objects.all().delete()
+            reply = "Visas saites ir dzēstas"
+            return render (response, "addedurls.html", {"allurls": allurls, "reply": reply})
+        if searched.isnumeric() == True:
+            urls(id=searched).delete()
+            reply = "Dzēsta saite ar ID: " + str(searched)
+            return render (response, "addedurls.html", {"allurls": allurls, "reply": reply})
+        else:
+            reply = "Nepareizi iedvadīts ID"
+            return render (response, "addedurls.html", {"allurls": allurls, "reply": reply})
+    else:
+        return render (response, "addedurls.html", {"allurls": allurls})
 
 
 def grab_rimi(baseurl):
@@ -45,7 +64,7 @@ def grab_rimi(baseurl):
     proxies = {"http": None, "https": None}
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0"}
 
-    baseurl = "https://www.rimi.lv/e-veikals/lv/produkti/piena-produkti-un-olas/jogurti-un-deserti/biezpiena-sierini/biezpiena-sierins-jeppi-ar-biskv-gars-kr-38g/p/946364"
+    #baseurl = "https://www.rimi.lv/e-veikals/lv/produkti/piena-produkti-un-olas/jogurti-un-deserti/biezpiena-sierini/biezpiena-sierins-jeppi-ar-biskv-gars-kr-38g/p/946364"
     #baseurl = "https://www.rimi.lv/e-veikals/lv/produkti/piena-produkti-un-olas/siers/c/SH-11-9"
     #baseurl = "https://www.rimi.lv/e-veikals/lv/produkti/augli-un-darzeni/augli-un-ogas/banani/c/SH-2-1-3"
 
@@ -135,7 +154,8 @@ def grab_rimi(baseurl):
             #discount_period = res["discount_period"],
         )
         p.save()
-    return render (request, "savetodb.html")
+    #return render (request, "savetodb.html")
+    return
 
 
 def grab_barbora(baseurl):
@@ -144,7 +164,7 @@ def grab_barbora(baseurl):
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0"}
 
     #baseurl = "https://barbora.lv/piena-produkti-un-olas/siers"
-    baseurl = "https://barbora.lv/produkti/kukur-uzk-cheetos-ar-kecupa-garsu-165-g"
+    #baseurl = "https://barbora.lv/produkti/kukur-uzk-cheetos-ar-kecupa-garsu-165-g"
 
     pagecount = 1
     url = baseurl
@@ -221,8 +241,96 @@ def grab_barbora(baseurl):
         )
         p.save()
 
+    #return render (request, "savetodb.html")
+    return
+
+
+def grab_maxima_sirsniga():
+    import json
+    import requests
+    from bs4 import BeautifulSoup as bs
+    
+    proxies = {"http": None, "https": None}
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0"}
+
+    baseurl = "https://www.maxima.lv/ajax/sirsnigaloadmore"
+
+    url = baseurl
+    results = []
+
+    print('\t URL:', url)  
+
+    offset = 0
+    while True:
+        r = requests.post(url, data={"offset": offset}, proxies=proxies, headers=headers)
+        if offset == 0: #pirmie 8 produkti tiek ielasiiti kaa vienmeer
+            items = bs(r.text, 'html.parser').select('.col-group')[0].select(".col-fourth")
+        else: #naakamie produkti, kas paraadaas tikai lapu skrolleejot zemaak, tiek ielasiiti peec citas metodes
+            itemshtml = (json.loads(r.text)["html"]) #atgrieztais json formaata r.text tiek paarveidots par dict no kura tiek panjemts html
+            items = bs(itemshtml, 'html.parser').select(".col-fourth")
+            if len(items) == 0:
+                break
+        for i in items:
+            items_title = i.select('.title')[0].text
+            price_eur = i.select('.discount .t1_container .t1 .value')[0].text
+            price_cents = i.select('.discount .t1_container .t1 .cents')[0].text
+            items_price = float(price_eur + "." + price_cents)
+            if i.select('.discount .t2_container .t2-sku-two-one') == []: #dazhiem produktiem vecaa cena tiek padota citaadi
+                items_oldprice_eur = i.select('.discount .t2_container .t2 .value')[0].text
+                items_oldprice_cents = i.select('.discount .t2_container .t2 .cents')[0].text
+                items_oldprice_value = float(items_oldprice_eur + "." + items_oldprice_cents)
+            else: 
+                items_oldprice_value = float (i.select('.discount .t2_container .t2')[0].text.replace("€", ""))
+            items_picture = "https://www.maxima.lv" + i.select('.img')[0].select('img')[0].get("src")
+            if i.select('.kg-t1') == []:
+                items_priceperunit = None
+            else:
+                items_priceperunit = i.select('.kg-t1')[0].text
+            items_discount_period = i.select('.tags_primary .i')[0].get("data-alt")[-15:]
+            results.append(dict(
+                name = items_title,
+                price = items_price,
+                price_old = items_oldprice_value,
+                price_per_unit = items_priceperunit,
+                link_to_picture = items_picture,
+                store_id = 3,
+                discount_period = items_discount_period
+            ))
+        if offset == 0:
+            offset = 8
+        else:
+            if len(items) < 16:
+                break
+            offset += 16
+
+    for res in results: #rezultaatu pievienoshana db
+        print(res)
+        p = products(        
+            name = res["name"],
+            price = res["price"],
+            price_old = res["price_old"],
+            price_per_unit = res["price_per_unit"],
+            link_to_picture = res["link_to_picture"],
+            store_id = res["store_id"],
+            discount_period = res["discount_period"],
+        )
+        p.save()
+    return
+
+
+def addinfotodb(request):
+    products.objects.all().delete()
+    urlsfromdb = urls.objects.all()
+    for i in urlsfromdb: 
+        print(i.url)
+        if i.store_id == 1:
+            grab_rimi(i.url)
+        if i.store_id == 2:
+            grab_barbora(i.url)
+    grab_maxima_sirsniga()
     return render (request, "savetodb.html")
- 
+
+
 def searchdb (response):
     if response.method == "POST":
         searched = (response.POST)["itemname"]

@@ -10,3 +10,7 @@ class products (models.Model):
     date_time_grab = models.DateTimeField(auto_now_add=True, null=True)
     store_id = models.IntegerField(null=True)
     discount_period = models.CharField(max_length=50, null=True)
+
+class urls(models.Model):
+    store_id = models.IntegerField(null=True)
+    url = models.URLField(max_length=200, null=True)
