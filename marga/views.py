@@ -9,6 +9,11 @@ from rest_framework.viewsets import ModelViewSet
 
 from marga.serializers import ProductsSerializer
 
+def index(request):
+    return render (request, "index.html")
+
+
+
 def grab_rimi(request):
     import requests
     from bs4 import BeautifulSoup as bs

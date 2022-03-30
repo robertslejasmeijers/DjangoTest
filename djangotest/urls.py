@@ -15,18 +15,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from marga.views import grab_barbora, grab_rimi, productsview, searchdb
+from marga import views
 from rest_framework.routers import SimpleRouter
 
 router = SimpleRouter()
-router.register("api/products", productsview)
+router.register("api/products", views.productsview)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", include("playground.urls")),
-    path("grab_barbora/", grab_barbora),
-    path("grab_rimi/", grab_rimi),
-    path("searchdb/", searchdb),
+    path("", views.index),
+    path("grab_barbora/", views.grab_barbora),
+    path("grab_rimi/", views.grab_rimi),
+    path("searchdb/", views.searchdb),
         
 ]
 
