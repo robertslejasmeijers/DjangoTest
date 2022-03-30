@@ -333,10 +333,11 @@ def addinfotodb(request):
 
 def searchdb (response):
     if response.method == "POST":
+        was_search=1
         searched = (response.POST)["itemname"]
         print (searched)
         reply = products.objects.filter(name__contains=searched).order_by("price")
-        return render (response, "searchdb.html", {"reply": reply, "searched": searched})
+        return render (response, "searchdb.html", {"reply": reply, "searched": searched, "was_search": was_search})
     else:
         return render (response, "searchdb.html")
 
