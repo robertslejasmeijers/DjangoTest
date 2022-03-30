@@ -1,7 +1,5 @@
 from django.db import models
-from django.utils import timezone
-
-class products (models.Model):
+class Products(models.Model):
     name = models.CharField(max_length=255, null=True)
     price = models.DecimalField(max_digits=6, decimal_places=2, null=True)
     price_old = models.DecimalField(max_digits=6, decimal_places=2, null=True)
@@ -11,6 +9,6 @@ class products (models.Model):
     store_id = models.IntegerField(null=True)
     discount_period = models.CharField(max_length=50, null=True)
 
-class urls(models.Model):
+class Urls(models.Model):
     store_id = models.IntegerField(null=True)
     url = models.URLField(max_length=200, null=True)
