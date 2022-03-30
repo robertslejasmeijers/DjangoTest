@@ -57,9 +57,6 @@ def addedurls(response):
 
 
 def grab_rimi(baseurl):
-    import requests
-    from bs4 import BeautifulSoup as bs
-    from datetime import datetime
         
     proxies = {"http": None, "https": None}
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0"}
