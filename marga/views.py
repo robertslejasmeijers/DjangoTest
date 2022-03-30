@@ -13,8 +13,31 @@ def index(request):
     return render (request, "index.html")
 
 
+def addurltodb(response):
+    reply = ""
+    if response.method == "POST":
+        searched = (response.POST)["urluser"]
+        if "https://barbora.lv/" not in searched and "https://www.rimi.lv/e-veikals/" not in searched:
+            reply = "Saite ir nepareiza. Pievienot var tikai Rimi vai Barbora produkta vai produktu grupas saiti."
+            print(reply)
+        elif "https://www.rimi.lv/e-veikals/" in searched:
+            u = (urls_rimi(url=searched))
+            u.save()
+            grab_rimi(str(searched))
+            reply = "Rimi saite ir pievienota."
+            print(reply)
+        elif "https://barbora.lv/" in searched:
+            u = (urls_barbora(url=searched))
+            u.save()
+            grab_barbora(str(searched))
+            reply = "Barbora saite ir pievienota."
+            print(reply)
+        return render (response, "addurltodb.html")
+    else:
+        return render (response, "addurltodb.html")
 
-def grab_rimi(request):
+
+def grab_rimi(baseurl):
     import requests
     from bs4 import BeautifulSoup as bs
     from datetime import datetime
@@ -115,7 +138,7 @@ def grab_rimi(request):
     return render (request, "savetodb.html")
 
 
-def grab_barbora(request):
+def grab_barbora(baseurl):
 
     proxies = {"http": None, "https": None}
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0"}
