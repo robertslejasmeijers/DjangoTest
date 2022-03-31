@@ -1,0 +1,9 @@
+python OS linux images meklee sheit: https://hub.docker.com/_/python
+
+parastais dockers:
+docker build --tag appnosaukums .
+docker run --publish 8000:8000 appnosaukums
+
+docker compose:
+docker-compose build
+docker-compose up
