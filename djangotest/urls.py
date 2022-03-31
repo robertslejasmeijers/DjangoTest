@@ -19,7 +19,7 @@ from marga import views
 from rest_framework.routers import SimpleRouter
 
 router = SimpleRouter()
-router.register("api/products", views.productsview)
+router.register("api/products", views.Productsview)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

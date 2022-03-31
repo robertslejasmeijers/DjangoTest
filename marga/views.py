@@ -2,7 +2,7 @@ from urllib import response
 from django.shortcuts import render
 from django.http import HttpRequest
 
-from marga.models import Products, Urls
+from marga.models import Product, Url, Store
 from rest_framework.viewsets import ModelViewSet
 
 from marga.serializers import ProductsSerializer
@@ -23,32 +23,32 @@ def addurltodb(response):
             reply = "Saite ir nepareiza. Pievienot var tikai Rimi vai Barbora produkta vai produktu grupas saiti."
             print(reply)
         elif "https://www.rimi.lv/e-veikals/" in searched:
-            u = (Urls(url=searched, store_id=1))
+            u = (Url(url=searched, store_id=1))
             u.save()
             grab_rimi(str(searched))
             reply = "Rimi saite ir pievienota."
             print(reply)
         elif "https://barbora.lv/" in searched:
-            u = (Urls(url=searched, store_id=2))
+            u = (Url(url=searched, store_id=2))
             u.save()
             grab_barbora(str(searched))
             reply = "Barbora saite ir pievienota."
             print(reply)
-        allurls = Urls.objects.all()
+        allurls = Url.objects.all()
         return render (response, "addurltodb.html", {"reply": reply, "searched": searched, "allurls": allurls})
     else:
         return render (response, "addurltodb.html")
 
 def addedurls(response):
-    allurls = Urls.objects.all()
+    allurls = Url.objects.all()
     if response.method == "POST":
         searched = (response.POST)["deleteurl"]
         if searched == "visas":
-            Urls.objects.all().delete()
+            Url.objects.all().delete()
             reply = "Visas saites ir dzēstas"
             return render (response, "addedurls.html", {"allurls": allurls, "reply": reply})
         if searched.isnumeric() == True:
-            Urls(id=searched).delete()
+            Url(id=searched).delete()
             reply = "Dzēsta saite ar ID: " + str(searched)
             return render (response, "addedurls.html", {"allurls": allurls, "reply": reply})
         else:
@@ -143,7 +143,7 @@ def grab_rimi(baseurl):
     #rezultaatu pievienoshana db
     for res in results: 
         print(res)
-        p = Products(        
+        p = Product(        
             name = res["name"],
             price = res["price"],
             price_old = res["price_old"],
@@ -229,7 +229,7 @@ def grab_barbora(baseurl):
     #rezultaatu pievienoshana db
     for res in results: 
         print(res)
-        p = Products(        
+        p = Product(        
             name = res["name"],
             price = res["price"],
             price_old = res["price_old"],
@@ -301,7 +301,7 @@ def grab_maxima_sirsniga():
 
     for res in results: #rezultaatu pievienoshana db
         print(res)
-        p = Products(        
+        p = Product(        
             name = res["name"],
             price = res["price"],
             price_old = res["price_old"],
@@ -315,8 +315,8 @@ def grab_maxima_sirsniga():
 
 
 def addinfotodb(request):
-    Products.objects.all().delete()
-    urlsfromdb = Urls.objects.all()
+    Product.objects.all().delete()
+    urlsfromdb = Url.objects.all()
     for i in urlsfromdb: 
         print(i.url)
         if i.store_id == 1:
@@ -332,11 +332,11 @@ def searchdb (response):
         was_search=1
         searched = (response.POST)["itemname"]
         print (searched)
-        reply = Products.objects.filter(name__contains=searched).order_by("price")
+        reply = Product.objects.filter(name__contains=searched).order_by("price")
         return render (response, "searchdb.html", {"reply": reply, "searched": searched, "was_search": was_search})
     else:
         return render (response, "searchdb.html")
 
-class productsview(ModelViewSet):
-    queryset = Products.objects.all()
+class Productsview(ModelViewSet):
+    queryset = Product.objects.all()
     serializer_class = ProductsSerializer
