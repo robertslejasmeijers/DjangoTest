@@ -30,6 +30,9 @@ urlpatterns = [
     path("addurltodb/", views.addurltodb),
     path("addinfotodb/", views.addinfotodb),
     path("addedurls/", views.addedurls),
+    path('users/', include('users.urls')),
+    path('users/', include('django.contrib.auth.urls')),
+    
 ]
 
 urlpatterns += router.urls
