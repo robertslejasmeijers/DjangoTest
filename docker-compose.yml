@@ -1,5 +1,14 @@
 version: "3.8"
 services:
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    container_name: postgres_container
   app:
     build: .
     volumes:
@@ -7,5 +16,6 @@ services:
     ports:
       - 8000:8000
     container_name: djangotest_container
-    command: sh -c "python manage.py runserver 0.0.0.0:8000"
-      
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    depends_on:
+      - db
