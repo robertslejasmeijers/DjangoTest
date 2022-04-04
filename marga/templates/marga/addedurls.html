@@ -1,6 +1,6 @@
-<!DOCTYPE html>
+{% extends 'marga/base.html' %}
 
-<link rel="stylesheet" href="/static/main.css"/>
+{% block content %}
 
 <html>
 <head>
@@ -19,6 +19,8 @@
     </form>
 
     <br>
+
+    <link rel="stylesheet" href="/static/main.css"/>
 
     {{ reply }}
 
@@ -58,3 +60,5 @@
 
 </body>
 </html>
+
+{% endblock %}
