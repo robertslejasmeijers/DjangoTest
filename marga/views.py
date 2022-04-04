@@ -7,13 +7,15 @@ from rest_framework.viewsets import ModelViewSet
 
 from marga.serializers import ProductsSerializer
 
-import requests
-from bs4 import BeautifulSoup as bs
-import json
-
 from marga.utils import *
 
 def index(request):
+    # u = (Store(name="RIMI"))
+    # u.save()
+    # u = (Store(name="BARBORA"))
+    # u.save()
+    # u = (Store(name="MAXIMA SIRSNĪGA"))
+    # u.save()
     return render (request, "marga/index.html")
 
 
