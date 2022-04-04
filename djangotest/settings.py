@@ -82,6 +82,8 @@ DATABASES = {
     }
 }
 
+
+
 #db prieksh docker
 # DATABASES = {
 #     'default': {
@@ -90,6 +92,18 @@ DATABASES = {
 #         'USER': 'postgres',
 #         'PASSWORD': 'postgres',
 #         'HOST': 'db',
+        
+#     }
+# }
+
+#db prieksh local
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'postgres',
+#         'USER': 'postgres',
+#         'PASSWORD': 'postgres',
+#         'HOST': 'localhost',
         
 #     }
 # }
