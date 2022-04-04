@@ -1,7 +1,6 @@
+{% extends 'marga/base.html' %}
 
-<!DOCTYPE html>
-
-<link rel="stylesheet" href="/static/main.css"/>
+{% block content %}
 
 <html>
 <head>
@@ -12,6 +11,8 @@
     <h4>
         <a href="/">Atgriezties sākumlapā</a>
     </h4>
+
+    <link rel="stylesheet" href="/static/main.css"/>
          
     <h1>Meklē preces:</h1>
     <form method = "post">
@@ -77,3 +78,5 @@
 
 </body>
 </html>
+
+{% endblock %}
