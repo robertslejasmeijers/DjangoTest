@@ -26,7 +26,7 @@ urlpatterns = [
     path("", views.index),
     path("grab_barbora/", views.grab_barbora),
     path("grab_rimi/", views.grab_rimi),
-    path("searchdb/", views.searchdb),
+    path("searchdb/", views.searchdb, name="searchdb"),
     path("addurltodb/", views.addurltodb),
     path("addinfotodb/", views.addinfotodb),
     path("addedurls/", views.addedurls),

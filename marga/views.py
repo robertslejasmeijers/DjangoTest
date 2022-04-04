@@ -89,7 +89,7 @@ def searchdb (response):
         was_search=1
         searched = (response.POST)["itemname"]
         print (searched)
-        reply = Product.objects.filter(name__contains=searched).order_by("price")
+        reply = Product.objects.filter(name__icontains=searched).order_by("price")
         return render (response, "marga/searchdb.html", {"reply": reply, "searched": searched, "was_search": was_search})
     else:
         return render (response, "marga/searchdb.html")
