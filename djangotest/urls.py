@@ -23,7 +23,7 @@ router.register("api/products", views.Productsview)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", views.index),
+    path("", views.index, name="index"),
     path("grab_barbora/", views.grab_barbora),
     path("grab_rimi/", views.grab_rimi),
     path("searchdb/", views.searchdb, name="searchdb"),

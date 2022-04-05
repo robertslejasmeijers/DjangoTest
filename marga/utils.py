@@ -231,7 +231,7 @@ def add_to_db(results):
             price_per_unit = res["price_per_unit"],
             link_to_picture = res["link_to_picture"],
             store_id = res["store_id"],
-            #discount_period = res["discount_period"],
+            discount_period = res["discount_period"],
         )
         p.save()
     return 

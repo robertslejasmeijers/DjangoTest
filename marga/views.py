@@ -16,8 +16,11 @@ def index(request):
     # u.save()
     # u = (Store(name="MAXIMA SIRSNĪGA"))
     # u.save()
-    return render (request, "marga/index.html")
-
+    if request.user.is_authenticated:
+        return render(request, "marga/index.html")
+    else:
+        return render(request, "users/login.html")
+    
 
 def addurltodb(response):
     reply = ""
