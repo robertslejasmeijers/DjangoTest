@@ -3,6 +3,10 @@ from bs4 import BeautifulSoup as bs
 import json
 
 from marga.models import Product, Url, Store
+from django.contrib.auth.models import User
+
+from urllib import response
+from django.http import HttpRequest
 
 results = []
 
@@ -35,6 +39,7 @@ def grab_rimi(baseurl):
             items_oldprice_value = float (items_oldprice[0].text.replace("€", "").replace(",", "."))
         items_picture = items[1].select('.product__main-image')[0].select("img")[0].get("src")
         items_priceperunit = items[1].select('.price-per')[0].text.strip().replace("\n                ", "")
+        items_discount_period = None
         results.append(dict(
             name = items_title,
             price = items_price,
@@ -42,7 +47,7 @@ def grab_rimi(baseurl):
             price_per_unit = items_priceperunit,
             link_to_picture = items_picture,
             store_id = 1,
-            #discount_period = items_discount_period,
+            discount_period = items_discount_period,
         ))
 
     else: #ja izveeleeta produktu grupa
@@ -75,6 +80,7 @@ def grab_rimi(baseurl):
                         items_oldprice_value = float (items_oldprice[0].text.replace("€", "").replace(",", "."))
                     items_picture = i.select('div.card__image-wrapper')[0].select("img")[0].get("src")
                     items_priceperunit = i.select('.card__price-per')[0].text.strip().replace("\n                    ", "")
+                    items_discount_period = None
                     results.append(dict(
                         name = items_title,
                         price = items_price,
@@ -82,7 +88,7 @@ def grab_rimi(baseurl):
                         price_per_unit = items_priceperunit,
                         link_to_picture = items_picture,
                         store_id = 1,
-                        #discount_period = items_discount_period,
+                        discount_period = items_discount_period,
                     ))
             pages -= 1
             pagecount += 1
@@ -118,6 +124,7 @@ def grab_barbora(baseurl):
                 items_oldprice_value = float (items_oldprice[0].text.replace("€", "").replace(",", "."))
             items_picture = items[0].select('.b-carousel--slide')[0].select("img")[0].get("src")
             items_priceperunit = items[0].select('.b-product-price--extra')[0].text.strip()
+            items_discount_period = None
             results.append(dict(
                 name = items_title,
                 price = items_price,
@@ -125,7 +132,7 @@ def grab_barbora(baseurl):
                 price_per_unit = items_priceperunit,
                 link_to_picture = items_picture,
                 store_id = 2,
-                #discount_period = items_discount_period,
+                discount_period = items_discount_period,
             ))
             break
 
@@ -144,15 +151,15 @@ def grab_barbora(baseurl):
                     items_oldprice_value = float (items_oldprice[0].text.replace("€", "").replace(",", "."))
                 items_picture = i.select('.b-link--product-info')[0].select("img")[0].get("src")
                 items_priceperunit = i.select('.b-product-price--extra')[0].text.strip()
+                items_discount_period = None
                 results.append(dict(
                     name = items_title,
                     price = items_price,
                     price_old = items_oldprice_value,
                     price_per_unit = items_priceperunit,
                     link_to_picture = items_picture,
-                    #date_time_grab = datetime.now(),
                     store_id = 2,
-                    #discount_period = items_discount_period,
+                    discount_period = items_discount_period,
                 ))
         if str(pagecount) == pages[-2].text:
             break
@@ -220,7 +227,7 @@ def grab_maxima_sirsniga():
     return (results)
 
 
-def add_to_db(results):
+def add_to_db(results, request):
    
     for res in results: 
         print(res)
@@ -231,6 +238,7 @@ def add_to_db(results):
             price_per_unit = res["price_per_unit"],
             link_to_picture = res["link_to_picture"],
             store_id = res["store_id"],
+            user_id = request.user.id,
             discount_period = res["discount_period"],
         )
         p.save()
