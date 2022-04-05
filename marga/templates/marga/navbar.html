@@ -8,37 +8,31 @@
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
           {% if user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'logout_user' %}">Iziet</a>
-          </li>
-          {% else %}
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'login_user' %}">Pierakstīties</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'register_user' %}">Reģistrēties</a>
-          </li>
-          {% endif %}
-          {% comment %} <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Dropdown
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li> {% endcomment %}
+
+          <form class="d-flex" method=POST action="{% url 'searchdb' %}">
+            {% csrf_token %}
+          <input class="form-control me-2" type="search" placeholder="Meklēt" aria-label="Search" name="itemname">
+          <button class="btn btn-outline-success" type="submit">Meklēt</button>
+          </form>
             </ul>
           </li>
         </ul>
-        <form class="d-flex" method=POST action="{% url 'searchdb' %}">
-          {% csrf_token %}
-          <input class="form-control me-2" type="search" placeholder="Meklēt" aria-label="Search" name="itemname">
-          <button class="btn btn-outline-success" type="submit">Meklēt</button>
-        </form>
+          
+          <span class="navbar-text">
+            <a class="nav-link active">Profils: {{request.user.username}}</a>
+          </span>          
+          <span class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{% url 'logout_user' %}">Iziet</a>
+          </span>
+          {% else %}
+          <span class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{% url 'login_user' %}">Pierakstīties</a>
+          </span>
+          <span class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{% url 'register_user' %}">Reģistrēties</a>
+          </span>
+          {% endif %}
+
       </div>
     </div>
   </nav>
