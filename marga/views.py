@@ -32,6 +32,9 @@ def addurltodb(request):
         if "https://barbora.lv/" not in searched and "https://www.rimi.lv/e-veikals/" not in searched:
             reply = "Saite ir nepareiza. Pievienot var tikai Rimi vai Barbora produkta vai produktu grupas saiti."
             print(reply)
+        if Url.objects.filter(url=searched, user_id=request.user.id).exists():
+            reply = "Kļūda! Šī saite jau bija pievienota!"
+            print(reply)
         elif "https://www.rimi.lv/e-veikals/" in searched:
             u = (Url(url=searched, store_id=1, user_id=request.user.id))
             u.save()
