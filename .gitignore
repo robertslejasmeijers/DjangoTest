@@ -1,2 +1,3 @@
 /data
+/tmp
 docker-compose.yml.sqlite
