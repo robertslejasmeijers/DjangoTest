@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup as bs
 import json
 
-from marga.models import Product, Url, Store
+from marga.models import Product, Price, Url, Store
 from django.contrib.auth.models import User
 
 from urllib import response
@@ -231,15 +231,19 @@ def add_to_db(results, request):
    
     for res in results: 
         print(res)
-        p = Product(        
+        prod = Product(        
             name = res["name"],
-            price = res["price"],
-            price_old = res["price_old"],
-            price_per_unit = res["price_per_unit"],
             link_to_picture = res["link_to_picture"],
             store_id = res["store_id"],
             user_id = request.user.id,
+       )
+        prod.save()
+        pri = Price(        
+            price = res["price"],
+            price_old = res["price_old"],
+            price_per_unit = res["price_per_unit"],
             discount_period = res["discount_period"],
+            product_id = prod.id,
         )
-        p.save()
+        pri.save()
     return 
