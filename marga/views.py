@@ -107,6 +107,12 @@ def searchdb (request):
     else:
         return render (request, "marga/searchdb.html")
 
+def test (request):
+    if request.user.is_authenticated == False:
+        return redirect('login')
+    return render (request, "marga/test.html", {})
+
+
 class Productsview(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductsSerializer

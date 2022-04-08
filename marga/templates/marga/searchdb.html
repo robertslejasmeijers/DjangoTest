@@ -22,18 +22,22 @@
 
     <h2>Meklēju datubāzē "{{ searched }}"</h2>
 
-<table>
-    <tr>
+    
+
+<table class="sortable">
+    <thead>
+        <tr>
         <th>Bilde</th>
         <th>Nosaukums</th>
-        <th>Cena</th>
+        <th>Cena</a></th>
         <th>Cena bez atl.</th>
         <th>Cena par vien.</th>
         <th>Atl. periods</th>
         <th>Datums</th>
         <th>Veikals</th>     
-      </tr>
-
+        </tr>
+    </thead>
+<tbody>
 {% for r in reply %}
 
 {% for p in r.prices.all|dictsortreversed:"date_time_grab"|slice:"10" %}
@@ -67,6 +71,7 @@
     {% endif %}
          
 </tr>
+</tbody>
 
 {% endfor %}
 
@@ -75,6 +80,8 @@
 {% endif %}
 
 </table>
+
+<script src="/static/sort-table.js"></script>
 
 </body>
 </html>
