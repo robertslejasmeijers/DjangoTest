@@ -81,7 +81,7 @@ def addedurls(request):
 def addinfotodb(request):
     if request.user.is_authenticated == False:
         return redirect('login')
-    Product.objects.filter(user_id=request.user.id).delete()
+    #Product.objects.filter(user_id=request.user.id).delete()
     urlsfromdb = Url.objects.filter(user_id=request.user.id)
     for i in urlsfromdb: 
         print(i.url)
@@ -94,19 +94,6 @@ def addinfotodb(request):
     add_to_db(results, request)
     del results[:]
     return render (request, "marga/addinfotodb.html")
-
-#vecais bez nodaliitiem products un prices
-# def searchdb (request):
-#     if request.user.is_authenticated == False:
-#         return redirect('login')
-#     if request.method == "POST":
-#         was_search=1
-#         searched = (request.POST)["itemname"]
-#         print (searched)
-#         reply = Product.objects.filter(user_id=request.user.id, name__icontains=searched).order_by("price")
-#         return render (request, "marga/searchdb.html", {"reply": reply, "searched": searched, "was_search": was_search})
-#     else:
-#         return render (request, "marga/searchdb.html")
 
 def searchdb (request):
     if request.user.is_authenticated == False:

@@ -68,7 +68,7 @@ def grab_rimi(baseurl):
 
             for i in items:
                 items_unavailable = i.select('.card__price-per')[0].text
-                if not "Īslaicīgi nav pieejams" in items_unavailable:
+                if not "Īslaicīgi nav pieejams" in items_unavailable and not "Ienāc savā profilā" in items_unavailable:
                     items_title = i.select('.card__name')[0].text
                     price_eur = i.select('div.card__price-wrapper')[0].select('.price-tag span')[0].text
                     price_cents = i.select('div.card__price-wrapper')[0].select('.price-tag sup')[0].text
@@ -231,19 +231,30 @@ def add_to_db(results, request):
    
     for res in results: 
         print(res)
-        prod = Product(        
-            name = res["name"],
-            link_to_picture = res["link_to_picture"],
-            store_id = res["store_id"],
-            user_id = request.user.id,
-       )
-        prod.save()
-        pri = Price(        
+        if Product.objects.filter(name = res["name"]).exists(): #ja taads produkts jau eksistee, tad tiek panjemts taa id un db pievienotas tikai cenas
+            originalid = Product.objects.get(name = res["name"]).id
+            pri = Price(        
             price = res["price"],
             price_old = res["price_old"],
             price_per_unit = res["price_per_unit"],
             discount_period = res["discount_period"],
-            product_id = prod.id,
+            product_id = originalid,
+            )
+            pri.save()
+        else:
+            prod = Product(        
+                name = res["name"],
+                link_to_picture = res["link_to_picture"],
+                store_id = res["store_id"],
+                user_id = request.user.id,
         )
-        pri.save()
+            prod.save()
+            pri = Price(        
+                price = res["price"],
+                price_old = res["price_old"],
+                price_per_unit = res["price_per_unit"],
+                discount_period = res["discount_period"],
+                product_id = prod.id,
+            )
+            pri.save()
     return 
