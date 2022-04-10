@@ -36,7 +36,7 @@ def addurltodb(request):
             reply = "Kļūda! Šī saite jau bija pievienota!"
             print(reply)
         elif "https://www.rimi.lv/e-veikals/" in searched:
-            u = (Url(url=searched, store_id=1, user_id=request.user.id))
+            u = (Url(url=searched, store_id=Store.RIMI_ID, user_id=request.user.id))
             u.save()
             grab_rimi(str(searched))
             add_to_db(results, request)
@@ -44,7 +44,7 @@ def addurltodb(request):
             reply = "Rimi saite ir pievienota."
             print(reply)
         elif "https://barbora.lv/" in searched:
-            u = (Url(url=searched, store_id=2, user_id=request.user.id))
+            u = (Url(url=searched, store_id=Store.BARBORA_ID, user_id=request.user.id))
             u.save()
             grab_barbora(str(searched))
             add_to_db(results, request)
@@ -85,9 +85,9 @@ def addinfotodb(request):
     urlsfromdb = Url.objects.filter(user_id=request.user.id)
     for i in urlsfromdb: 
         print(i.url)
-        if i.store_id == 1:
+        if i.store_id == Store.RIMI_ID:
             grab_rimi(i.url)
-        if i.store_id == 2:
+        if i.store_id == Store.BARBORA_ID:
             grab_barbora(i.url)
     #grab_maxima_sirsniga()
     global results

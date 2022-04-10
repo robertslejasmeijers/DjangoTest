@@ -46,7 +46,7 @@ def grab_rimi(baseurl):
             price_old = items_oldprice_value,
             price_per_unit = items_priceperunit,
             link_to_picture = items_picture,
-            store_id = 1,
+            store_id = Store.RIMI_ID,
             discount_period = items_discount_period,
         ))
 
@@ -87,7 +87,7 @@ def grab_rimi(baseurl):
                         price_old = items_oldprice_value,
                         price_per_unit = items_priceperunit,
                         link_to_picture = items_picture,
-                        store_id = 1,
+                        store_id = Store.RIMI_ID,
                         discount_period = items_discount_period,
                     ))
             pages -= 1
@@ -131,7 +131,7 @@ def grab_barbora(baseurl):
                 price_old = items_oldprice_value,
                 price_per_unit = items_priceperunit,
                 link_to_picture = items_picture,
-                store_id = 2,
+                store_id = Store.BARBORA_ID,
                 discount_period = items_discount_period,
             ))
             break
@@ -158,7 +158,7 @@ def grab_barbora(baseurl):
                     price_old = items_oldprice_value,
                     price_per_unit = items_priceperunit,
                     link_to_picture = items_picture,
-                    store_id = 2,
+                    store_id = Store.BARBORA_ID,
                     discount_period = items_discount_period,
                 ))
         if str(pagecount) == pages[-2].text:
@@ -214,7 +214,7 @@ def grab_maxima_sirsniga():
                 price_old = items_oldprice_value,
                 price_per_unit = items_priceperunit,
                 link_to_picture = items_picture,
-                store_id = 3,
+                store_id = Store.SISNIGA_ID,
                 discount_period = items_discount_period
             ))
         if offset == 0:
@@ -231,17 +231,20 @@ def add_to_db(results, request):
    
     for res in results: 
         print(res)
-        if Product.objects.filter(name = res["name"]).exists(): #ja taads produkts jau eksistee, tad tiek panjemts taa id un db pievienotas tikai cenas
-            originalid = Product.objects.get(name = res["name"]).id
-            pri = Price(        
-            price = res["price"],
-            price_old = res["price_old"],
-            price_per_unit = res["price_per_unit"],
-            discount_period = res["discount_period"],
-            product_id = originalid,
-            )
-            pri.save()
-        else:
+        if Product.objects.filter(name = res["name"]).exists(): #ja taads produkts jau eksistee, 
+            if res["price"] == float(Product.objects.filter(name = res["name"])[0].prices.all().latest("date_time_grab").price): #un cena ir vienadaa ar jaunaako
+                print ("Produkts %s jau eksistee un cena ir vienadaa" % res["name"])  #tad datu baazee nekas netiek ierakstiits
+            else: #tad tiek panjemts produkta id, un db pievienota tikai cena
+                originalid = Product.objects.get(name = res["name"]).id
+                pri = Price(        
+                price = res["price"],
+                price_old = res["price_old"],
+                price_per_unit = res["price_per_unit"],
+                discount_period = res["discount_period"],
+                product_id = originalid,
+                )
+                pri.save()
+        else: #citaadi saglabaaja datu baazee info gan par produktu gan par cenu
             prod = Product(        
                 name = res["name"],
                 link_to_picture = res["link_to_picture"],
