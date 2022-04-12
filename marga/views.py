@@ -99,18 +99,36 @@ def addinfotodb(request):
 
 @login_required
 def searchdb (request):
+    if request.method == "POST":
+        form = Searchdb(request.POST)
+        was_search=1
+        searched = form["search"].value()
+        print (searched)
+        reply = Product.objects.filter(user_id=request.user.id, name__icontains=searched).order_by("prices__price")
+        reply = list(dict.fromkeys(reply)) #remove duplicates
+        return render (request, "marga/searchdb.html", {"reply": reply, "searched": searched, "was_search": was_search, "form": form})
+    else:
+        form = Searchdb
+        return render (request, "marga/searchdb.html", {"form": form})
+
+
+def test(request):
     form = Searchdb
+    return render(request, "marga/test.html", {"form": form})
+
+
+def searchdbvalues(request):
     if request.method == "POST":
         was_search=1
         searched = (request.POST)["itemname"]
         print (searched)
-        reply = Product.objects.filter(user_id=request.user.id, name__icontains=searched)
-        return render (request, "marga/searchdb.html", {"reply": reply, "searched": searched, "was_search": was_search, "form": form})
+        reply = Product.objects.filter(user_id=request.user.id, name__icontains=searched).order_by("prices__price").values("name", "link_to_picture", "store_id", "prices__price", "prices__price_old", "prices__price_per_unit", "prices__discount_period", "prices__date_time_grab")
+        return render (request, "marga/test.html", {"reply": reply, "searched": searched, "was_search": was_search})
     else:
-        return render (request, "marga/searchdb.html")
+        return render (request, "marga/test.html")
 
 
-def test (request):
+def dbsortbypython (request):
     sort_by = request.GET.get('sort_by', None)
     prices = Price.objects.all()
     prices_and_products = []
@@ -126,8 +144,12 @@ def test (request):
     return render (request, "marga/test.html", {"prices_and_products": prices_and_products})
 
 
+
+
+    
+
+
 class Productsview(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductsSerializer
-
 

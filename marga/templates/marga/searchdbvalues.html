@@ -16,7 +16,10 @@
 
         {{ form.as_p }}
         
-       <button type = "submit">Submit</button>
+        
+       Ievadi preces nosaukumu:
+       <input name = "itemname" />
+       <input type = "submit" />
 
     </form>
 
@@ -40,9 +43,8 @@
         </tr>
     </thead>
 <tbody>
-{% for r in reply %}
 
-{% for p in r.prices.all|dictsortreversed:"date_time_grab"|slice:"10" %}
+{% for r in reply %}
 
 <tr>
 
@@ -50,15 +52,15 @@
     
     <td class="item_name">{{ r.name }}</td>
 
-    <td class="item_price">{{ p.price }}</td>
+    <td class="item_price">{{ r.prices__price }}</td>
 
-    <td class="item_oldprice">{{ p.price_old }}</td>
+    <td class="item_oldprice">{{ r.prices__price_old }}</td>
 
-    <td class="item_price_per_unit">{{ p.price_per_unit }}</td>
+    <td class="item_price_per_unit">{{ r.prices__price_per_unit }}</td>
 
-    <td class="discount_period">{{ p.discount_period }}</td>
+    <td class="discount_period">{{ r.prices__discount_period }}</td>
 
-    <td class="date_time_grab">{{ p.date_time_grab }}</td>
+    <td class="date_time_grab">{{ r.prices__date_time_grab }}</td>
 
     {% if r.store_id == 1 %}
     <td class="store_img"><img src="/static/logo_rimi.png"></td></td>
@@ -74,8 +76,6 @@
          
 </tr>
 </tbody>
-
-{% endfor %}
 
 {% endfor %}
 

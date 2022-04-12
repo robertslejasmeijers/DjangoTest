@@ -40,13 +40,11 @@ class Url(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     url = models.URLField(max_length=200, null=True)
 
-print ("BEFORE: Store exists")
+ #prepopulate database with stores
 try:
-    print ("TRY: Store exists")
-    if not Store.objects.exists(): #prepopulate the database with some stores
-        print ("Pievienojam Store")
-        Store.objects.create(name="Rimi")
-        Store.objects.create(name="Barbora")
-        Store.objects.create(name="Sirsniga")
+    if not Store.objects.exists():
+        Store.objects.create(name="RIMI")
+        Store.objects.create(name="BARBORA")
+        Store.objects.create(name="SIRSNIGA")
 except:
     pass
