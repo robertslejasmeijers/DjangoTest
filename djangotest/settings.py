@@ -158,4 +158,4 @@ REST_FRAMEWORK = {
     'COERCE_DECIMAL_TO_STRING': False
 }
 
-
+LOGIN_URL = "/users/login/"

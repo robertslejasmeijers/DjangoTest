@@ -214,7 +214,7 @@ def grab_maxima_sirsniga():
                 price_old = items_oldprice_value,
                 price_per_unit = items_priceperunit,
                 link_to_picture = items_picture,
-                store_id = Store.SISNIGA_ID,
+                store_id = Store.SIRSNIGA_ID,
                 discount_period = items_discount_period
             ))
         if offset == 0:
@@ -237,11 +237,11 @@ def add_to_db(results, request):
             else: #tad tiek panjemts produkta id, un db pievienota tikai cena
                 originalid = Product.objects.get(name = res["name"]).id
                 pri = Price(        
-                price = res["price"],
-                price_old = res["price_old"],
-                price_per_unit = res["price_per_unit"],
-                discount_period = res["discount_period"],
-                product_id = originalid,
+                    price = res["price"],
+                    price_old = res["price_old"],
+                    price_per_unit = res["price_per_unit"],
+                    discount_period = res["discount_period"],
+                    product_id = originalid,
                 )
                 pri.save()
         else: #citaadi saglabaaja datu baazee info gan par produktu gan par cenu
@@ -250,7 +250,7 @@ def add_to_db(results, request):
                 link_to_picture = res["link_to_picture"],
                 store_id = res["store_id"],
                 user_id = request.user.id,
-        )
+            )
             prod.save()
             pri = Price(        
                 price = res["price"],

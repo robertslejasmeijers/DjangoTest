@@ -11,11 +11,16 @@
     <link rel="stylesheet" href="/static/main.css"/>
          
     <h1>Meklē preces:</h1>
-    <form method = "post">
+    <form action="" method="post">
         {% csrf_token %}
+
+        {{ form.as_p }}
+        
+        
        Ievadi preces nosaukumu:
        <input name = "itemname" />
        <input type = "submit" />
+
     </form>
 
     {% if was_search %}

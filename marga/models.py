@@ -7,9 +7,12 @@ class Store(models.Model):
 
     def __str__(self):
         return self.name
+
     RIMI_ID = 1
     BARBORA_ID = 2
-    SISNIGA_ID = 3
+    SIRSNIGA_ID = 3
+
+
         
 class Product(models.Model):
     name = models.CharField(max_length=255, null=True)
@@ -36,3 +39,14 @@ class Url(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     url = models.URLField(max_length=200, null=True)
+
+print ("BEFORE: Store exists")
+try:
+    print ("TRY: Store exists")
+    if not Store.objects.exists(): #prepopulate the database with some stores
+        print ("Pievienojam Store")
+        Store.objects.create(name="Rimi")
+        Store.objects.create(name="Barbora")
+        Store.objects.create(name="Sirsniga")
+except:
+    pass
