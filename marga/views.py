@@ -10,7 +10,7 @@ from rest_framework.viewsets import ModelViewSet
 from marga.serializers import ProductsSerializer
 
 from marga.utils import *
-from .forms import Searchdb
+from .forms import Searchdb, Addurl, Deleteurl
 
 
 # def index(request):
@@ -31,7 +31,10 @@ def addurltodb(request):
     global results
     allurls = Url.objects.filter(user_id=request.user.id)
     if request.method == "POST":
-        searched = (request.POST)["urluser"]
+        #searched = (request.POST)["urluser"]
+        form_addurl = Addurl(request.POST)
+        if form_addurl.is_valid():
+            searched = form_addurl.cleaned_data["name"]
         if "https://barbora.lv/" not in searched and "https://www.rimi.lv/e-veikals/" not in searched:
             reply = "Saite ir nepareiza. Pievienot var tikai Rimi vai Barbora produkta vai produktu grupas saiti."
             print(reply)
@@ -54,32 +57,42 @@ def addurltodb(request):
             del results[:]
             reply = "Barbora saite ir pievienota."
             print(reply)
-        return render (request, "marga/addurltodb.html", {"reply": reply, "allurls": allurls})
+        form_addurl = Addurl()
+        return render (request, "marga/addurltodb.html", {"reply": reply, "allurls": allurls, "form_addurl": form_addurl})
     else:
-        return render (request, "marga/addurltodb.html", {"allurls": allurls})
+        form_addurl = Addurl
+        return render (request, "marga/addurltodb.html", {"allurls": allurls , "form_addurl": form_addurl})
 
 
 @login_required
 def deleteurl(request):
     allurls = Url.objects.filter(user_id=request.user.id)
+    form_deleteurl = Deleteurl
     if request.method == "POST":
-        searched = (request.POST)["deleteurl"]
-        if searched == "0":
-            allurls.delete()
-            reply = "Visas saites ir dzēstas"
-            return render (request, "marga/deleteurl.html", {"allurls": allurls, "reply": reply})
-        if searched.isnumeric() == True:
-            if not Url.objects.filter(user_id=request.user.id, id=searched).exists():
-                reply = "Saite ar šādu ID neeksistē!"
-                return render (request, "marga/deleteurl.html", {"allurls": allurls, "reply": reply})   
-            Url.objects.filter(user_id=request.user.id, id=searched).delete()
-            reply = "Dzēsta saite ar ID: " + str(searched)
-            return render (request, "marga/deleteurl.html", {"allurls": allurls, "reply": reply})
-        else:
-            reply = "Nepareizi iedvadīts ID"
-            return render (request, "marga/deleteurl.html", {"allurls": allurls, "reply": reply})
+        #searched = (request.POST)["deleteurl"]
+        form_deleteurl = Deleteurl(request.POST)
+        if form_deleteurl.is_valid():
+            searched = form_deleteurl.cleaned_data["name"]
+            if searched == "0":
+                allurls.delete()
+                reply = "Visas saites ir dzēstas"
+                form_deleteurl = Deleteurl()
+                return render (request, "marga/deleteurl.html", {"allurls": allurls, "reply": reply, "form_deleteurl": form_deleteurl})
+            if searched.isnumeric() == True:
+                if not Url.objects.filter(user_id=request.user.id, id=searched).exists():
+                    reply = "Saite ar šādu ID neeksistē!"
+                    form_deleteurl = Deleteurl()
+                    return render (request, "marga/deleteurl.html", {"allurls": allurls, "reply": reply, "form_deleteurl": form_deleteurl})   
+                Url.objects.filter(user_id=request.user.id, id=searched).delete()
+                reply = "Dzēsta saite ar ID: " + str(searched)
+                form_deleteurl = Deleteurl()
+                return render (request, "marga/deleteurl.html", {"allurls": allurls, "reply": reply, "form_deleteurl": form_deleteurl})
+            else:
+                reply = "Nepareizi iedvadīts ID"
+                form_deleteurl = Deleteurl()
+                return render (request, "marga/deleteurl.html", {"allurls": allurls, "reply": reply, "form_deleteurl": form_deleteurl})
     else:
-        return render (request, "marga/deleteurl.html", {"allurls": allurls})
+        return render (request, "marga/deleteurl.html", {"allurls": allurls, "form_deleteurl": form_deleteurl})
 
 
 @login_required
@@ -101,13 +114,23 @@ def addinfotodb(request):
 
 @login_required
 def searchdb (request):
+    if len(Url.objects.filter(user_id=request.user.id)) and len(Product.objects.filter(user_id=request.user.id)) == 0:
+        print("Nav saites")
+        form = Searchdb
+        return render (request, "marga/index.html", {"form": form})
     if request.method == "POST":
-        searched = request.POST["search"]
+        #searched = request.POST["search"]
+        form = Searchdb(request.POST)
+        if form.is_valid():
+            searched = form.cleaned_data["name"]
     else:
+        form = Searchdb
         searched = ""
     reply = Product.objects.filter(user_id=request.user.id, name__icontains=searched).order_by("prices__price")
     reply = list(dict.fromkeys(reply)) #remove duplicates
-    return render (request, "marga/index.html", {"reply": reply})
+    return render (request, "marga/index.html", {"reply": reply, "form": form})
+      
+            
 
 
 def test(request):

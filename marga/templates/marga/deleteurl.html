@@ -2,28 +2,41 @@
 
 {% block content %}
 
-    <title>Pievienot datubāzei URL</title>
+    <title>Dzēst URL</title>
 </head>
 <body>
 
     <br>
 
-    <form method = "post">
+    {% if allurls %}
+
+    <form class="d-flex" method=POST action="{% url 'deleteurl' %}">
+        
+        {{ form_deleteurl }}
         {% csrf_token %}
-        Lai dzēstu saiti, ievadi ID (lai dzēstu visas, ievadi "0"):
-       <input name = "deleteurl" />
+        
+       {% comment %} <input name = "deleteurl" /> {% endcomment %}
        <button class="btn btn-outline-danger" type="submit">DZĒST</button>
     </form>
 
     <br>
 
     {{ reply }}
-
-
+<div>
+    <br>
+</div>
+    
 </body>
 </html>
 
+
+
 {% include 'marga/addedurls.html' %}
+
+    
+{% else %}
+Nav pievienota neviena saite!
+{% endif %}
 
 {% endblock %}
 

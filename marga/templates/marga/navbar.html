@@ -18,8 +18,10 @@
         </span>
 
         <form class="d-flex" method=POST action="{% url 'index' %}">
+        {{ form }}
         {% csrf_token %}
-        <input class="form-control me-2" type="search" placeholder="Meklēt preci" aria-label="Search" name="search">
+        {% comment %} <input class="form-control me-2" type="search" placeholder="Meklēt preci" aria-label="Search" name="search"> {% endcomment %}
+        
         <button class="btn btn-outline-dark" type="submit">Meklēt</button>
         </form>
         
@@ -35,13 +37,7 @@
           <span class="nav-item">
             <a class="nav-link active" aria-current="page" href="{% url 'logout_user' %}">Iziet</a>
           </span>
-          {% else %}
-          <span class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'login_user' %}">Pierakstīties</a>
-          </span>
-          <span class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'register_user' %}">Reģistrēties</a>
-          </span>
+
           {% endif %}
 
       </div>

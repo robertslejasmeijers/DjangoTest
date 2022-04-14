@@ -3,25 +3,34 @@
 {% block content %}
 
 
-    <title>Pievienot datubāzei URL</title>
+    <title>Pievienot saiti</title>
 </head>
 <body>
     <br>
-  
-    <form method = "post">
+    
+    <form class="d-flex" method=POST action="{% url 'addurltodb' %}">
+        
+        {{ form_addurl }}
         {% csrf_token %}
-        Pievieno saiti no Rimi vai Barbora:
-       <input name = "urluser" />
+        
+        <span>
+       {% comment %} <input name = "urluser" /> {% endcomment %}
        <button class="btn btn-outline-dark" type="submit">Pievienot</button>
+        </span>
     </form>
 
     <br>
 
     {{ reply }}
+    <div>
+        <br>
+    </div>
 
 </body>
 </html>
 
+{% if allurls %}
 {% include 'marga/addedurls.html' %}
+{% endif %}
 
 {% endblock %}

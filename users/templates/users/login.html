@@ -2,31 +2,71 @@
 
 {% block content %}
 
-<html>
-<head>
     <title>Pierakstīties</title>
+
+    <!-- Custom styles for this template-->
+    {% load static %}
+    <link href="{% static 'sb-admin-2.min.css' %}" rel="stylesheet">
+    
+
 </head>
-<body>
 
-    <h1>Pierakstīties</h1>
+<body class="bg-gray-200">
 
-    <form action="" method="POST">
-        {% csrf_token %}
+    <div class="container">
 
-        <form>
-            <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">Lietotājvārds</label>
-              <input type="text" class="form-control" name="username" aria-describedby="emailHelp">
+        <!-- Outer Row -->
+        <div class="row justify-content-center">
+
+            <div class="col-xl-10 col-lg-12 col-md-9">
+
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                        <!-- Nested Row within Card Body -->
+                        <div class="row">
+                            <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+                            <div class="col-lg-6">
+                                <div class="p-5">
+                                    <div class="text-center">
+                                        <h1 class="h4 text-gray-900 mb-4">Pieslēdzies!</h1>
+                                    </div>
+                                    <form action="" method="POST" class="user">
+                                        {% csrf_token %}
+                                        <div class="form-group">
+                                            <input type="text" class="form-control form-control-user" placeholder="Lietotājvārds" name="username">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="password" class="form-control form-control-user" placeholder="Parole" name="password">
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox small">
+                                                <input type="checkbox" class="custom-control-input" id="customCheck" name="remember_me">
+                                                <label class="custom-control-label" for="customCheck">Atcerēties mani</label>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-user btn-block">Pieslēgties</button>
+                                    </form>
+                                    <hr>
+
+                                    <div class="text-center">
+                                        <a class="small" href="{% url 'register_user'%}">Reģistrēties</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-            <div class="mb-3">
-              <label for="exampleInputPassword1" class="form-label">Parole</label>
-              <input type="password" class="form-control" name="password">
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-          </form>
+
+        </div>
+
+    </div>
+
 
 
 </body>
+
 </html>
 
 {% endblock %}

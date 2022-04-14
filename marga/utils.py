@@ -231,11 +231,11 @@ def add_to_db(results, request):
    
     for res in results: 
         print(res)
-        if Product.objects.filter(name = res["name"]).exists(): #ja taads produkts jau eksistee, 
-            if res["price"] == float(Product.objects.filter(name = res["name"])[0].prices.all().latest("date_time_grab").price): #un cena ir vienadaa ar jaunaako
+        if Product.objects.filter(user_id=request.user.id, name = res["name"]).exists(): #ja taads produkts jau eksistee, 
+            if res["price"] == float(Product.objects.filter(user_id=request.user.id, name = res["name"])[0].prices.all().latest("date_time_grab").price): #un cena ir vienadaa ar jaunaako
                 print ("Produkts %s jau eksistee un cena ir vienadaa" % res["name"])  #tad datu baazee nekas netiek ierakstiits
             else: #tad tiek panjemts produkta id, un db pievienota tikai cena
-                originalid = Product.objects.get(name = res["name"]).id
+                originalid = Product.objects.get(user_id=request.user.id, name = res["name"]).id
                 pri = Price(        
                     price = res["price"],
                     price_old = res["price_old"],

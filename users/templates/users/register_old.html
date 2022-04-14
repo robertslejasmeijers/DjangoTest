@@ -1,0 +1,35 @@
+{% extends 'marga/base.html' %}
+
+{% block content %}
+
+{% if form.errors %}
+
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>Kļūda reģistrācijas formā</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+{% endif %}
+
+<html>
+<head>
+    <title>Reģistrēties</title>
+</head>
+<body>
+
+    <h1>Reģistrēties</h1>
+
+    <form action="{% url 'register_user' %}" method="POST">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <br>
+        <button class="btn btn-outline-success" type="submit">Reģistrēties</button>
+
+        <form>
+
+</body>
+</html>
+
+{% endblock %}
