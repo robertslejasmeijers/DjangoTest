@@ -2,30 +2,72 @@
 
 {% block content %}
 
-<html>
-<head>
-    <title>Marga app Home Page</title>
+
+    <title>Meklēt datubāzē</title>
 </head>
 <body>
-<img src="/static/logo_rimi.png" style="width:251px;height:141px;">
-<span style="font-size:170px;">VS</span>
-<img src="/static/logo_barbora.jpg" style="width:251px;height:141px;">
 
-<h1>
-    Izvēlies darbību:
-</h1>
+    
+         
+    <table class="sortable" width=100%>
+    <thead>
+        <tr>
+        <th>Bilde</th>
+        <th>Nosaukums</th>
+        <th>Cena</a></th>
+        <th>Cena bez atl.</th>
+        <th>Cena par vien.</th>
+        <th>Atl. periods</th>
+        <th>Datums</th>
+        <th>Veikals</th>     
+        </tr>
+    </thead>
+<tbody>
+{% for r in reply %}
 
-<h2>
-    <a href="/addurltodb/">Pievienot, apskatīt vai dzēst Rimi un Barbora saites</a>
-</h2>
+{% for p in r.prices.all|dictsortreversed:"date_time_grab"|slice:"10" %}
 
-<h2>
-    <a href="/searchdb/">Meklēt un salīdzināt produktus</a>
-</h2>
+<tr>
 
-<h2>
-    <a href="/addinfotodb/">Atjaunot datubāzē visu informāciju par produktiem (var aizņemt ilgāku laiku atkarībā no pievienoto produktu skaita)</a>
-</h2>
+    <td class="item_img"><img src="{{ r.link_to_picture }}"></td>
+    
+    <td class="item_name">{{ r.name }}</td>
+
+    <td class="item_price">{{ p.price }}</td>
+
+    <td class="item_oldprice">{{ p.price_old }}</td>
+
+    <td class="item_price_per_unit">{{ p.price_per_unit }}</td>
+
+    <td class="discount_period">{{ p.discount_period }}</td>
+
+    <td class="date_time_grab">{{ p.date_time_grab }}</td>
+
+    {% if r.store_id == 1 %}
+    {% load static %}
+    <td class="store_img"><img src="{% static 'logo_rimi.png' %}"></td></td>
+    {% endif %}
+
+    {% if r.store_id == 2 %}
+    {% load static %}
+    <td class="store_img"><img src="{% static 'logo_barbora.jpg' %}"></td></td>
+    {% endif %}
+
+    {% if r.store_id == 3 %}
+    {% load static %}
+    <td class="store_img"><img src="{% static 'logo_maxima_sirsniiga.jpg' %}"></td></td>
+    {% endif %}
+         
+</tr>
+</tbody>
+
+{% endfor %}
+
+{% endfor %}
+
+</table>
+
+<script src="/static/sort-table.js"></script>
 
 </body>
 </html>

@@ -1,3 +1,10 @@
 /data
 /tmp
+/.vscode
+/djangotest/__pycache__
+/marga/__pycache__
+marga/migrations/__pycache__
+/users/__pycache__
+users/migrations/__pycache__
 docker-compose.yml.sqlite
+db.sqlite3

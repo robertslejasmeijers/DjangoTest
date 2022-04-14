@@ -23,13 +23,10 @@ router.register("api/products", views.Productsview)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", views.index, name="index"),
-    path("grab_barbora/", views.grab_barbora),
-    path("grab_rimi/", views.grab_rimi),
-    path("searchdb/", views.searchdb, name="searchdb"),
-    path("addurltodb/", views.addurltodb),
-    path("addinfotodb/", views.addinfotodb),
-    path("addedurls/", views.addedurls),
+    path("", views.searchdb, name="index"),
+    path("addurltodb/", views.addurltodb, name="addurltodb"),
+    path("addinfotodb/", views.addinfotodb, name="addinfotodb"),
+    path("deleteurl/", views.deleteurl, name="deleteurl"),
     path('users/', include('users.urls')),
     path('users/', include('django.contrib.auth.urls')),
     path("test/", views.test),

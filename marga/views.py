@@ -13,8 +13,7 @@ from marga.utils import *
 from .forms import Searchdb
 
 
-@login_required
-def index(request):
+# def index(request):
     # u = (Store(name="RIMI"))
     # u.save()
     # u = (Store(name="BARBORA"))
@@ -23,13 +22,14 @@ def index(request):
     # u.save()
     # if request.user.is_authenticated == False:
     #     return redirect('login')
-    return render(request, "marga/index.html")
+    # return render(request, "marga/index.html")
     
 
 @login_required
 def addurltodb(request):
     reply = ""
     global results
+    allurls = Url.objects.filter(user_id=request.user.id)
     if request.method == "POST":
         searched = (request.POST)["urluser"]
         if "https://barbora.lv/" not in searched and "https://www.rimi.lv/e-veikals/" not in searched:
@@ -54,30 +54,32 @@ def addurltodb(request):
             del results[:]
             reply = "Barbora saite ir pievienota."
             print(reply)
-        allurls = Url.objects.filter(user_id=request.user.id)
-        return render (request, "marga/addurltodb.html", {"reply": reply, "searched": searched, "allurls": allurls})
+        return render (request, "marga/addurltodb.html", {"reply": reply, "allurls": allurls})
     else:
-        return render (request, "marga/addurltodb.html")
+        return render (request, "marga/addurltodb.html", {"allurls": allurls})
 
 
 @login_required
-def addedurls(request):
+def deleteurl(request):
     allurls = Url.objects.filter(user_id=request.user.id)
     if request.method == "POST":
         searched = (request.POST)["deleteurl"]
-        if searched == "visas":
+        if searched == "0":
             allurls.delete()
             reply = "Visas saites ir dzēstas"
-            return render (request, "marga/addedurls.html", {"allurls": allurls, "reply": reply})
+            return render (request, "marga/deleteurl.html", {"allurls": allurls, "reply": reply})
         if searched.isnumeric() == True:
+            if not Url.objects.filter(user_id=request.user.id, id=searched).exists():
+                reply = "Saite ar šādu ID neeksistē!"
+                return render (request, "marga/deleteurl.html", {"allurls": allurls, "reply": reply})   
             Url.objects.filter(user_id=request.user.id, id=searched).delete()
             reply = "Dzēsta saite ar ID: " + str(searched)
-            return render (request, "marga/addedurls.html", {"allurls": allurls, "reply": reply})
+            return render (request, "marga/deleteurl.html", {"allurls": allurls, "reply": reply})
         else:
             reply = "Nepareizi iedvadīts ID"
-            return render (request, "marga/addedurls.html", {"allurls": allurls, "reply": reply})
+            return render (request, "marga/deleteurl.html", {"allurls": allurls, "reply": reply})
     else:
-        return render (request, "marga/addedurls.html", {"allurls": allurls})
+        return render (request, "marga/deleteurl.html", {"allurls": allurls})
 
 
 @login_required
@@ -100,16 +102,12 @@ def addinfotodb(request):
 @login_required
 def searchdb (request):
     if request.method == "POST":
-        form = Searchdb(request.POST)
-        was_search=1
-        searched = form["search"].value()
-        print (searched)
-        reply = Product.objects.filter(user_id=request.user.id, name__icontains=searched).order_by("prices__price")
-        reply = list(dict.fromkeys(reply)) #remove duplicates
-        return render (request, "marga/searchdb.html", {"reply": reply, "searched": searched, "was_search": was_search, "form": form})
+        searched = request.POST["search"]
     else:
-        form = Searchdb
-        return render (request, "marga/searchdb.html", {"form": form})
+        searched = ""
+    reply = Product.objects.filter(user_id=request.user.id, name__icontains=searched).order_by("prices__price")
+    reply = list(dict.fromkeys(reply)) #remove duplicates
+    return render (request, "marga/index.html", {"reply": reply})
 
 
 def test(request):

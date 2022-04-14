@@ -1,0 +1,26 @@
+.item_name {color:#000; text-align: left;}
+.item_price {color:#F00}
+.item_oldprice {color: #00C;}
+.item_price_per_unit {color:rgb(119, 79, 4)}
+.discount_period {color: #080;}
+.date_time_grab {color:#000}
+.store_img img {width:84px;height:47px;}
+.item_img img {width:84px;height:47px;}
+td {
+    border: 1px solid #dddddd;
+    text-align: center;
+    padding: 8px;
+  }
+th {
+    border: 1px solid #dddddd;
+    text-align: center;
+    padding: 8px;
+  }
+.active {
+  color: blue !important;
+  }
+
+.nav-item{
+  padding-left:5px;
+  padding-right:5px;
+}

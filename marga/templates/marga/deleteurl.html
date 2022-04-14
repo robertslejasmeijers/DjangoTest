@@ -2,22 +2,23 @@
 
 {% block content %}
 
-
     <title>Pievienot datubāzei URL</title>
 </head>
 <body>
+
     <br>
-  
+
     <form method = "post">
         {% csrf_token %}
-        Pievieno saiti no Rimi vai Barbora:
-       <input name = "urluser" />
-       <button class="btn btn-outline-dark" type="submit">Pievienot</button>
+        Lai dzēstu saiti, ievadi ID (lai dzēstu visas, ievadi "0"):
+       <input name = "deleteurl" />
+       <button class="btn btn-outline-danger" type="submit">DZĒST</button>
     </form>
 
     <br>
 
     {{ reply }}
+
 
 </body>
 </html>
@@ -25,3 +26,4 @@
 {% include 'marga/addedurls.html' %}
 
 {% endblock %}
+

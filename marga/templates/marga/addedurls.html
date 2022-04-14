@@ -1,27 +1,5 @@
-{% extends 'marga/base.html' %}
 
-{% block content %}
-
-<html>
-<head>
-    <title>Pievienot datubāzei URL</title>
-</head>
-<body>
-
-    <form method = "post">
-        {% csrf_token %}
-        Lai dzēstu saiti, ievadi ID (lai dzēstu visas saites ievadi "visas"):
-       <input name = "deleteurl" />
-       <input type = "submit" />
-    </form>
-
-    <br>
-
-    <link rel="stylesheet" href="/static/main.css"/>
-
-    {{ reply }}
-
-    <h2>Pievienotās saites:</h2>
+    <h4>Pievienotās saites:</h4>
 
     <table>
         <tr>
@@ -58,4 +36,3 @@
 </body>
 </html>
 
-{% endblock %}
