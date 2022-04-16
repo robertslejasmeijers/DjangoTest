@@ -16,7 +16,7 @@ from .forms import Searchdb, Addurl, Deleteurl
 @login_required
 def addurltodb(request):
     reply = ""
-    global results
+    
     allurls = Url.objects.filter(user_id=request.user.id)
     if request.method == "POST":
         #searched = (request.POST)["urluser"]
@@ -32,17 +32,17 @@ def addurltodb(request):
         elif "https://www.rimi.lv/e-veikals/" in searched:
             u = (Url(url=searched, store_id=Store.RIMI_ID, user_id=request.user.id))
             u.save()
-            grab_rimi(str(searched))
-            add_to_db(results, request)
-            del results[:]
+            grabresults = grab_rimi(str(searched))
+            add_to_db(grabresults, request)
+            #del results[:]
             reply = "Rimi saite ir pievienota."
             print(reply)
         elif "https://barbora.lv/" in searched:
             u = (Url(url=searched, store_id=Store.BARBORA_ID, user_id=request.user.id))
             u.save()
-            grab_barbora(str(searched))
-            add_to_db(results, request)
-            del results[:]
+            grabresults = grab_barbora(str(searched))
+            add_to_db(grabresults, request)
+            #del results[:]
             reply = "Barbora saite ir pievienota."
             print(reply)
         form_addurl = Addurl()
@@ -90,13 +90,14 @@ def addinfotodb(request):
     for i in urlsfromdb: 
         print(i.url)
         if i.store_id == Store.RIMI_ID:
-            grab_rimi(i.url)
+            grabresults = grab_rimi(i.url)
+            add_to_db(grabresults, request)
         if i.store_id == Store.BARBORA_ID:
-            grab_barbora(i.url)
-    #grab_maxima_sirsniga()
-    global results
-    add_to_db(results, request)
-    del results[:]
+            grabresults = grab_barbora(i.url)
+            add_to_db(grabresults, request)
+    grabresults = grab_maxima_sirsniga()
+    add_to_db(grabresults, request)
+    #del results[:]
     return render (request, "marga/addinfotodb.html")
 
 

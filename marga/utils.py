@@ -8,7 +8,6 @@ from django.contrib.auth.models import User
 from urllib import response
 from django.http import HttpRequest
 
-results = []
 
 def grab_rimi(baseurl):
             
@@ -21,7 +20,7 @@ def grab_rimi(baseurl):
 
     pagecount = 1
     url = baseurl
-    global results
+    results = []
         
     r = requests.get(url, proxies=proxies, headers=headers)
     items = bs(r.text, 'html.parser').select('.side-cart-adapt')
@@ -106,7 +105,7 @@ def grab_barbora(baseurl):
 
     pagecount = 1
     url = baseurl
-    global results
+    results = []
       
     while True:
         print('\t URL:', url)  
@@ -177,7 +176,7 @@ def grab_maxima_sirsniga():
     baseurl = "https://www.maxima.lv/ajax/sirsnigaloadmore"
 
     url = baseurl
-    global results
+    results = []
    
     print('\t URL:', url)  
 
