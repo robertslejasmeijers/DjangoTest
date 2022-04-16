@@ -1,6 +1,8 @@
 from urllib import response
 from django.shortcuts import render, redirect
 from django.http import HttpRequest
+from django.core.paginator import Paginator
+from django.db.models import F
 
 from marga.models import Product, Price, Url, Store
 from django.contrib.auth.models import User
@@ -109,21 +111,32 @@ def searchdb (request):
     if request.method == "POST":
         #searched = request.POST["search"]
         form_search = Searchdb(request.POST)
+        try:
+            orderby = request.POST['orderby']
+        except:
+            orderby = "prices__price"    
         if form_search.is_valid():
             searched = form_search.cleaned_data["name"]
     else:
         form_search = Searchdb
         searched = ""
-    reply = Product.objects.filter(user_id=request.user.id, name__icontains=searched).order_by("prices__price")
-    reply = list(dict.fromkeys(reply)) #remove duplicates
+        orderby = "prices__price"
+    if orderby == "prices__date_time_grab":
+        selection = Product.objects.filter(user_id=request.user.id, name__icontains=searched).order_by("-" + orderby)
+    else: #ja kaartots peec cenas vai atlaides, tad iipashs selection, kur Nulls rezultaati ir peedeejie
+        selection = Product.objects.filter(user_id=request.user.id, name__icontains=searched).order_by(F(orderby).asc(nulls_last=True))
+    selection = list(dict.fromkeys(selection)) #remove duplicates
+    p = Paginator(selection, 500)
+    page = request.GET.get('page')
+    reply = p.get_page(page)
+
     return render (request, "marga/index.html", {"reply": reply, "form_search": form_search})
       
             
 
 
 def test(request):
-    form = Searchdb
-    return render(request, "marga/test.html", {"form": form})
+    return render(request, "marga/test.html")
 
 
 def searchdbvalues(request):
