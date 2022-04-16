@@ -18,7 +18,7 @@
         </span>
 
         <form class="d-flex" method=POST action="{% url 'index' %}">
-        {{ form }}
+        {{ form_search }}
         {% csrf_token %}
         {% comment %} <input class="form-control me-2" type="search" placeholder="Meklēt preci" aria-label="Search" name="search"> {% endcomment %}
         

@@ -11,19 +11,7 @@ from marga.serializers import ProductsSerializer
 
 from marga.utils import *
 from .forms import Searchdb, Addurl, Deleteurl
-
-
-# def index(request):
-    # u = (Store(name="RIMI"))
-    # u.save()
-    # u = (Store(name="BARBORA"))
-    # u.save()
-    # u = (Store(name="MAXIMA SIRSNĪGA"))
-    # u.save()
-    # if request.user.is_authenticated == False:
-    #     return redirect('login')
-    # return render(request, "marga/index.html")
-    
+ 
 
 @login_required
 def addurltodb(request):
@@ -115,20 +103,19 @@ def addinfotodb(request):
 @login_required
 def searchdb (request):
     if len(Url.objects.filter(user_id=request.user.id)) and len(Product.objects.filter(user_id=request.user.id)) == 0:
-        print("Nav saites")
-        form = Searchdb
-        return render (request, "marga/index.html", {"form": form})
+        form_search = Searchdb
+        return render (request, "marga/index.html", {"form_search": form_search})
     if request.method == "POST":
         #searched = request.POST["search"]
-        form = Searchdb(request.POST)
-        if form.is_valid():
-            searched = form.cleaned_data["name"]
+        form_search = Searchdb(request.POST)
+        if form_search.is_valid():
+            searched = form_search.cleaned_data["name"]
     else:
-        form = Searchdb
+        form_search = Searchdb
         searched = ""
     reply = Product.objects.filter(user_id=request.user.id, name__icontains=searched).order_by("prices__price")
     reply = list(dict.fromkeys(reply)) #remove duplicates
-    return render (request, "marga/index.html", {"reply": reply, "form": form})
+    return render (request, "marga/index.html", {"reply": reply, "form_search": form_search})
       
             
 
@@ -163,11 +150,6 @@ def dbsortbypython (request):
         prices_and_products.sort(key=lambda k: (k[sort_by], k["date"]))
         print (prices_and_products)
     return render (request, "marga/test.html", {"prices_and_products": prices_and_products})
-
-
-
-
-    
 
 
 class Productsview(ModelViewSet):
