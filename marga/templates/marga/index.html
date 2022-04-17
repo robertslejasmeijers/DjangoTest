@@ -12,7 +12,7 @@
     
     {% if reply.has_previous %}
     <li class="page-item">
-    <a class="page-link" href="?page={{ reply.previous_page_number }}">&laquo;</a>
+    <a class="page-link" href="?page={{ reply.previous_page_number }}&name={{ searched }}&orderby={{ orderby }}">&laquo;</a>
     </li>
     {% endif %}
     
@@ -24,15 +24,30 @@
     
     {% if reply.has_next %}
     <li class="page-item">
-    <a class="page-link" href="?page={{ reply.next_page_number }}">&raquo;</a>
+    <a class="page-link" href="?page={{ reply.next_page_number }}&name={{ searched }}&orderby={{ orderby }}">&raquo;</a>
     </li>
     {% endif %}
+
+
+    <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Kārtot pēc:
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__price">Cenas</a>
+          <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__price_old">Atlaides</a>
+          <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__date_time_grab">Datuma</a>
+        </div>
+      </div>
+    </ul>
+</nav> 
+
+
     
-    <div class="row mb-3">
-        {% comment %} <label class="col-sm-7 col-form-label"></label> {% endcomment %}
-    <div class="col-sm-2" style="width: 100%">
-        <form method = "POST" action = "{% url 'index' %}">
-            {% csrf_token %}
+    {% comment %} <div class="row mb-3">
+        <div class="col-sm-2" style="width: 100%">
+        <form method = "GET" action = "{% url 'index' %}">
+        
         <select class="form-select" aria-label=".form-select-sm example" style="margin-left:10px" title="orderby" name="orderby" onchange="this.form.submit()">
         <option selected disabled>Kārtot pēc:</option>
         <option value="prices__price">Cenas</option>
@@ -43,7 +58,7 @@
     </div>
     </div>
 </ul>
-</nav>
+</nav> {% endcomment %}
 
     <div class="container">
         

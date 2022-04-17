@@ -1,3 +1,4 @@
+import re
 from urllib import response
 from django.shortcuts import render, redirect
 from django.http import HttpRequest
@@ -103,24 +104,23 @@ def addinfotodb(request):
     return render (request, "marga/addinfotodb.html")
 
 
+
 @login_required
 def searchdb (request):
     if len(Url.objects.filter(user_id=request.user.id)) and len(Product.objects.filter(user_id=request.user.id)) == 0:
         form_search = Searchdb
         return render (request, "marga/index.html", {"form_search": form_search})
-    if request.method == "POST":
-        #searched = request.POST["search"]
-        form_search = Searchdb(request.POST)
-        try:
-            orderby = request.POST['orderby']
-        except:
-            orderby = "prices__price"    
+    searched = ""
+    orderby = "prices__price"
+    form_search = Searchdb
+    if request.method == "GET":
+        form_search = Searchdb(request.GET)
         if form_search.is_valid():
             searched = form_search.cleaned_data["name"]
-    else:
-        form_search = Searchdb
-        searched = ""
-        orderby = "prices__price"
+        try:
+            orderby = request.GET['orderby']
+        except:
+            pass
     if orderby == "prices__date_time_grab":
         selection = Product.objects.filter(user_id=request.user.id, name__icontains=searched).order_by("-" + orderby)
     else: #ja kaartots peec cenas vai atlaides, tad iipashs selection, kur Nulls rezultaati ir peedeejie
@@ -130,10 +130,8 @@ def searchdb (request):
     page = request.GET.get('page')
     reply = p.get_page(page)
 
-    return render (request, "marga/index.html", {"reply": reply, "form_search": form_search})
+    return render (request, "marga/index.html", {"reply": reply, "form_search": form_search, "searched": searched, "orderby": orderby})
       
-            
-
 
 def test(request):
     return render(request, "marga/test.html")

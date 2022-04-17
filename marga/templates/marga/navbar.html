@@ -17,9 +17,9 @@
           <a class="nav-link active" aria-current="page" href="{% url 'deleteurl' %}">Dzēst saiti</a>
         </span>
 
-        <form class="d-flex" method=POST action="{% url 'index' %}">
+        <form class="d-flex" method=GET action="{% url 'index' %}">
         {{ form_search }}
-        {% csrf_token %}
+        
         {% comment %} <input class="form-control me-2" type="search" placeholder="Meklēt preci" aria-label="Search" name="search"> {% endcomment %}
         
         <button class="btn btn-outline-dark" type="submit">Meklēt</button>
