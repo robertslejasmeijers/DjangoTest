@@ -2,8 +2,6 @@
 
 {% block content %}
 
-{% load mytags %}
-
     <title>Meklēt preces</title>
 </head>
 <body>
@@ -34,10 +32,12 @@
         Kārtot pēc:
         </button>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__price">Cenas</a>
-          <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__price_old">Cenas bez atlaides</a>
-          <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__date_time_grab">Datuma</a>
-          <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=store_id">Veikala</a>
+            <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__discount">Atlaides</a>
+            <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__date_time_grab">Datuma</a>
+            <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__price">Cenas</a>
+            <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__price_old">Cenas bez atlaides</a>
+            <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=name">Nosaukuma</a>
+            <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=store_id">Veikala</a>
         </div>
     </div>
 </ul>
@@ -81,8 +81,12 @@
     {% else %}
     <td class="item_oldprice">{{ p.price_old }}</td>
     {% endif %}
-
-    <td class="item_discount">{{ p.price|as_percentage_of:p.price_old }}</td>
+    
+    {% if p.discount == None %}
+    <td class="item_discount"></td>
+    {% else %}
+    <td class="item_discount">{{ p.discount }} %</td>
+    {% endif %}
     
     <td class="item_price_per_unit">{{ p.price_per_unit }}</td>
 

@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'marga',
     'users',
-    'marga.templatetags.mytags',
     ]
 
 MIDDLEWARE = [

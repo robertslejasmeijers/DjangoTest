@@ -120,7 +120,7 @@ def searchdb (request):
         form_search = Searchdb
         return render (request, "marga/index.html", {"form_search": form_search})
     searched = ""
-    orderby = "prices__price"
+    orderby = "prices__discount"
     form_search = Searchdb
     if request.method == "GET":
         form_search = Searchdb(request.GET)
@@ -132,6 +132,8 @@ def searchdb (request):
             pass
     if orderby == "prices__date_time_grab":
         selection = Product.objects.filter(user_id=request.user.id, name__icontains=searched).order_by("-" + orderby)
+    elif orderby == "prices__discount":
+        selection = Product.objects.filter(user_id=request.user.id, name__icontains=searched).order_by(F(orderby).desc(nulls_last=True))
     else: #ja kaartots peec cenas vai atlaides, tad iipashs selection, kur Nulls rezultaati ir peedeejie
         selection = Product.objects.filter(user_id=request.user.id, name__icontains=searched).order_by(F(orderby).asc(nulls_last=True))
     selection = list(dict.fromkeys(selection)) #remove duplicates

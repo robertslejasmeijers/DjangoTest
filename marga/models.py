@@ -32,6 +32,16 @@ class Price(models.Model):
     discount_period = models.CharField(max_length=50, null=True)
     date_time_grab = models.DateTimeField(auto_now_add=True, null=True)
     product = models.ForeignKey(Product, related_name="prices", on_delete=models.CASCADE, null=True)
+    discount = models.IntegerField(null=True)
+
+    def save(self):
+        if self.price_old is None:
+            self.discount = None
+        else:
+            self.discount = round (100 - (100* self.price / self.price_old))
+        super(Price, self).save()
+        print(super(Price, self))
+    
     class Meta:
         ordering = ('price', )
 

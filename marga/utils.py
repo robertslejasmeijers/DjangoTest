@@ -5,9 +5,6 @@ import json
 from marga.models import Product, Price, Url, Store
 from django.contrib.auth.models import User
 
-from urllib import response
-from django.http import HttpRequest
-
 
 def grab_rimi(baseurl):
             
