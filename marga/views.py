@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpRequest
 from django.core.paginator import Paginator
 from django.db.models import F
+from django.contrib import messages
 
 from marga.models import Product, Price, Url, Store
 from django.contrib.auth.models import User
@@ -34,20 +35,26 @@ def addurltodb(request):
             print(reply)
         elif "https://www.rimi.lv/e-veikals/" in searched:
             u = (Url(url=searched, store_id=Store.RIMI_ID, user_id=request.user.id))
-            u.save()
             grabresults = grab_rimi(str(searched))
-            add_to_db(grabresults, request)
-            #del results[:]
-            reply = "Rimi saite ir pievienota."
-            print(reply)
+            if grabresults == []:
+                reply = "Kļūda! No ievadītās RIMI saites neizdevās iegūt datus!"
+            else:
+                u.save()
+                add_to_db(grabresults, request)
+                #del results[:]
+                reply = "Rimi saite ir pievienota."
+                print(reply)
         elif "https://barbora.lv/" in searched:
             u = (Url(url=searched, store_id=Store.BARBORA_ID, user_id=request.user.id))
-            u.save()
             grabresults = grab_barbora(str(searched))
-            add_to_db(grabresults, request)
-            #del results[:]
-            reply = "Barbora saite ir pievienota."
-            print(reply)
+            if grabresults == []:
+                reply = "Kļūda! No ievadītās BARBORA saites neizdevās iegūt datus!"
+            else:
+                u.save()
+                add_to_db(grabresults, request)
+                #del results[:]
+                reply = "Barbora saite ir pievienota."
+                print(reply)
         form_addurl = Addurl()
         return render (request, "marga/addurltodb.html", {"reply": reply, "allurls": allurls, "form_addurl": form_addurl})
     else:
@@ -101,7 +108,9 @@ def addinfotodb(request):
     grabresults = grab_maxima_sirsniga()
     add_to_db(grabresults, request)
     #del results[:]
-    return render (request, "marga/addinfotodb.html")
+    messages.success(request, 'Dati atjaunoti!')
+    return redirect('index')
+    #return render (request, "marga/addinfotodb.html")
 
 
 
@@ -156,8 +165,8 @@ def dbsortbypython (request):
         item = {"name": i.product.name, "store": i.product.store.name, "price": i.price, "date": i.date_time_grab}
         prices_and_products.append(item)
     if sort_by:
-        def sort_key(item):
-            return (item[sort_by], item['date'])
+        #def sort_key(item):
+        #    return (item[sort_by], item['date'])
         #prices_and_products.sort(key=sort_key)
         prices_and_products.sort(key=lambda k: (k[sort_by], k["date"]))
         print (prices_and_products)

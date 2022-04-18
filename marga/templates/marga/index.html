@@ -2,12 +2,12 @@
 
 {% block content %}
 
+{% load mytags %}
 
     <title>Meklēt preces</title>
 </head>
 <body>
 
-<nav aria-label="Page navigation example">
 <ul class="pagination justify-content-center">
     
     {% if reply.has_previous %}
@@ -35,34 +35,18 @@
         </button>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
           <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__price">Cenas</a>
-          <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__price_old">Atlaides</a>
+          <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__price_old">Cenas bez atlaides</a>
           <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__date_time_grab">Datuma</a>
+          <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=store_id">Veikala</a>
         </div>
-      </div>
-    </ul>
-</nav> 
-
-
-    
-    {% comment %} <div class="row mb-3">
-        <div class="col-sm-2" style="width: 100%">
-        <form method = "GET" action = "{% url 'index' %}">
-        
-        <select class="form-select" aria-label=".form-select-sm example" style="margin-left:10px" title="orderby" name="orderby" onchange="this.form.submit()">
-        <option selected disabled>Kārtot pēc:</option>
-        <option value="prices__price">Cenas</option>
-        <option value="prices__price_old">Atlaides</option>
-        <option value="prices__date_time_grab">Datuma</option>
-      </select>
-      </form>
-    </div>
     </div>
 </ul>
-</nav> {% endcomment %}
 
     <div class="container">
         
     {% if reply %}
+
+    
          
     <table class="sortable">
     <thead>
@@ -71,6 +55,7 @@
         <th>Nosaukums</th>
         <th>Cena</a></th>
         <th>Cena bez atl.</th>
+        <th>Atlaide</th>
         <th>Cena par vien.</th>
         <th>Atl. periods</th>
         <th>Datums</th>
@@ -78,9 +63,10 @@
         </tr>
     </thead>
 <tbody>
+
 {% for r in reply %}
 
-{% for p in r.prices.all|dictsortreversed:"date_time_grab"|slice:"10" %}
+{% for p in r.prices.all|dictsortreversed:"date_time_grab"|slice:"3" %}
 
 <tr>
 
@@ -90,11 +76,21 @@
 
     <td class="item_price">{{ p.price }}</td>
 
+    {% if p.price_old == None %}
+    <td class="item_oldprice"></td>
+    {% else %}
     <td class="item_oldprice">{{ p.price_old }}</td>
+    {% endif %}
 
+    <td class="item_discount">{{ p.price|as_percentage_of:p.price_old }}</td>
+    
     <td class="item_price_per_unit">{{ p.price_per_unit }}</td>
 
+    {% if p.discount_period == None %}
+    <td class="discount_period"></td>
+    {% else %}
     <td class="discount_period">{{ p.discount_period }}</td>
+    {% endif %}
 
     <td class="date_time_grab">{{ p.date_time_grab }}</td>
 
@@ -125,8 +121,6 @@
 </table>
 
 </div>
-
-
 
 <script src="/static/sort-table.js"></script>
 

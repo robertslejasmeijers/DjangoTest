@@ -24,6 +24,10 @@ def grab_rimi(baseurl):
         
     r = requests.get(url, proxies=proxies, headers=headers)
     items = bs(r.text, 'html.parser').select('.side-cart-adapt')
+    if len(items) == 0:
+        print("Nevarēja nolasīt datus no RIMI URL:", url)
+        return results
+
     checkhowpages = bs(r.text, 'html.parser').select('.product-grid__item')
     
     if checkhowpages == []: #ja izveeleets tikai viens produkts
@@ -38,7 +42,12 @@ def grab_rimi(baseurl):
             items_oldprice_value = float (items_oldprice[0].text.replace("€", "").replace(",", "."))
         items_picture = items[1].select('.product__main-image')[0].select("img")[0].get("src")
         items_priceperunit = items[1].select('.price-per')[0].text.strip().replace("\n                ", "")
-        items_discount_period = None
+        try:
+            items_discount_period_start = items[1].select('p.notice')[0].text.split()[-3]
+            items_discount_period_end = items[1].select('p.notice')[0].text.split()[-1]
+            items_discount_period = items_discount_period_start + " - " + items_discount_period_end
+        except:
+            items_discount_period = None
         results.append(dict(
             name = items_title,
             price = items_price,
@@ -112,8 +121,12 @@ def grab_barbora(baseurl):
         r = requests.get(url, proxies=proxies, headers=headers)
         items = bs(r.text, 'html.parser').select('.b-product--desktop-grid')
 
+
         if items == []: #ja izveeleets tikai viens produkts
             items = bs(r.text, 'html.parser').select('.b-products-allow-desktop-view')
+            if len(items) == 0:
+                print("Nevarēja nolasīt datus no BARBORA URL:", url)
+                return results
             items_title = items[0].select('.b-product-info--title')[0].text
             items_price = float (items[0].select('.b-product-price-current-number')[0].text.strip().replace("€", "").replace(",", "."))
             items_oldprice = items[0].select('.b-product-crossed-out-price')
@@ -123,7 +136,10 @@ def grab_barbora(baseurl):
                 items_oldprice_value = float (items_oldprice[0].text.replace("€", "").replace(",", "."))
             items_picture = items[0].select('.b-carousel--slide')[0].select("img")[0].get("src")
             items_priceperunit = items[0].select('.b-product-price--extra')[0].text.strip()
-            items_discount_period = None
+            try:
+                items_discount_period = items[0].select('.b-product-info--offer-valid-to')[0].text.split()[-1]
+            except:
+                items_discount_period = None
             results.append(dict(
                 name = items_title,
                 price = items_price,
@@ -137,6 +153,9 @@ def grab_barbora(baseurl):
 
         #ja izveeleeta produktu grupa:
         pages = bs(r.text, 'html.parser').select('.b-pagination-wrapper .pagination li a')
+        if len(items) == 0:
+            print("Nevarēja nolasīt datus no BARBORA URL:", url)
+            return results
 
         for i in items:
             items_unavailable = i.select('.b-product-unavailable--wrap')
@@ -150,7 +169,10 @@ def grab_barbora(baseurl):
                     items_oldprice_value = float (items_oldprice[0].text.replace("€", "").replace(",", "."))
                 items_picture = i.select('.b-link--product-info')[0].select("img")[0].get("src")
                 items_priceperunit = i.select('.b-product-price--extra')[0].text.strip()
-                items_discount_period = None
+                try:
+                    items_discount_period = i.select('.b-product-promo-label-primary')[0].get("title").split()[-1]
+                except:
+                    items_discount_period = None
                 results.append(dict(
                     name = items_title,
                     price = items_price,
@@ -185,6 +207,9 @@ def grab_maxima_sirsniga():
         r = requests.post(url, data={"offset": offset}, proxies=proxies, headers=headers)
         if offset == 0: #pirmie 8 produkti tiek ielasiiti kaa vienmeer
             items = bs(r.text, 'html.parser').select('.col-group')[0].select(".col-fourth")
+            if len(items) == 0:
+                print("Nevarēja nolasīt datus no MAXIMA URL:", url)
+                return results
         else: #naakamie produkti, kas paraadaas tikai lapu skrolleejot zemaak, tiek ielasiiti peec citas metodes
             itemshtml = (json.loads(r.text)["html"]) #atgrieztais json formaata r.text tiek paarveidots par dict no kura tiek panjemts html
             items = bs(itemshtml, 'html.parser').select(".col-fourth")

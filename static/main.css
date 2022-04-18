@@ -3,8 +3,9 @@ body {
 } 
 
 .item_name {color:#000; text-align: left;}
-.item_price {color:#F00}
+.item_price {color:rgb(192, 0, 0)}
 .item_oldprice {color: #00C;}
+.item_discount {color:#F00}
 .item_price_per_unit {color:rgb(119, 79, 4)}
 .discount_period {color: #080;}
 .date_time_grab {color:#000}
