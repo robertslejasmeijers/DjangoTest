@@ -19,6 +19,7 @@ class Product(models.Model):
     link_to_picture = models.URLField(max_length=255, null=True)
     store = models.ForeignKey(Store, on_delete=models.CASCADE, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    url = models.URLField(max_length=200, null=True)
     class Meta:
         ordering = ('name', )
     def __str__(self):
@@ -40,8 +41,7 @@ class Price(models.Model):
         else:
             self.discount = round (100 - (100* self.price / self.price_old))
         super(Price, self).save()
-        print(super(Price, self))
-    
+            
     class Meta:
         ordering = ('price', )
 

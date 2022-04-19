@@ -59,7 +59,7 @@
         <th>Cena par vien.</th>
         <th>Atl. periods</th>
         <th>Datums</th>
-        <th>Veikals</th>     
+        <th>Veikals</th>
         </tr>
     </thead>
 <tbody>
@@ -72,7 +72,11 @@
 
     <td class="item_img"><img src="{{ r.link_to_picture }}"></td>
     
+    {% if r.url == None %}
     <td class="item_name">{{ r.name }}</td>
+    {% else %}
+    <td class="item_name"> <a href="{{ r.url }}">{{ r.name }}</a></td>
+    {% endif %}
 
     <td class="item_price">{{ p.price }}</td>
 
@@ -112,7 +116,7 @@
     {% load static %}
     <td class="store_img"><img src="{% static 'logo_maxima_sirsniiga.jpg' %}"></td></td>
     {% endif %}
-         
+       
 </tr>
 </tbody>
 

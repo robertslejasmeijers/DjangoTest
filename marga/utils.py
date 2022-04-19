@@ -37,7 +37,7 @@ def grab_rimi(baseurl):
             items_oldprice_value = None        
         else:
             items_oldprice_value = float (items_oldprice[0].text.replace("€", "").replace(",", "."))
-        items_picture = items[1].select('.product__main-image')[0].select("img")[0].get("src")
+        items_picture = items[1].select('.product__main-image')[0].select("img")[0].get("src").replace(",h_480", ",h_216").replace(",w_480", ",w_216")
         items_priceperunit = items[1].select('.price-per')[0].text.strip().replace("\n                ", "")
         try:
             items_discount_period_start = items[1].select('p.notice')[0].text.split()[-3]
@@ -45,8 +45,10 @@ def grab_rimi(baseurl):
             items_discount_period = items_discount_period_start + " - " + items_discount_period_end
         except:
             items_discount_period = None
+        items_url = url
         results.append(dict(
             name = items_title,
+            url = items_url,
             price = items_price,
             price_old = items_oldprice_value,
             price_per_unit = items_priceperunit,
@@ -86,8 +88,10 @@ def grab_rimi(baseurl):
                     items_picture = i.select('div.card__image-wrapper')[0].select("img")[0].get("src")
                     items_priceperunit = i.select('.card__price-per')[0].text.strip().replace("\n                    ", "")
                     items_discount_period = None
+                    items_url = "https://www.rimi.lv" + i.select('.card__url')[0].get("href")
                     results.append(dict(
                         name = items_title,
+                        url = items_url,
                         price = items_price,
                         price_old = items_oldprice_value,
                         price_per_unit = items_priceperunit,
@@ -137,8 +141,10 @@ def grab_barbora(baseurl):
                 items_discount_period = items[0].select('.b-product-info--offer-valid-to')[0].text.split()[-1]
             except:
                 items_discount_period = None
+            items_url = url
             results.append(dict(
                 name = items_title,
+                url = items_url,
                 price = items_price,
                 price_old = items_oldprice_value,
                 price_per_unit = items_priceperunit,
@@ -170,8 +176,10 @@ def grab_barbora(baseurl):
                     items_discount_period = i.select('.b-product-promo-label-primary')[0].get("title").split()[-1]
                 except:
                     items_discount_period = None
+                items_url = "https://barbora.lv" + i.select('.b-link--product-info')[0].get("href")
                 results.append(dict(
                     name = items_title,
+                    url = items_url,
                     price = items_price,
                     price_old = items_oldprice_value,
                     price_per_unit = items_priceperunit,
@@ -229,8 +237,10 @@ def grab_maxima_sirsniga():
             else:
                 items_priceperunit = i.select('.kg-t1')[0].text
             items_discount_period = i.select('.tags_primary .i')[0].get("data-alt")[-15:]
+            items_url = None
             results.append(dict(
                 name = items_title,
+                url = items_url,
                 price = items_price,
                 price_old = items_oldprice_value,
                 price_per_unit = items_priceperunit,
@@ -252,11 +262,12 @@ def add_to_db(results, request):
    
     for res in results: 
         print(res)
-        if Product.objects.filter(user_id=request.user.id, name = res["name"]).exists(): #ja taads produkts jau eksistee, 
-            if res["price"] == float(Product.objects.filter(user_id=request.user.id, name = res["name"])[0].prices.all().latest("date_time_grab").price): #un cena ir vienadaa ar jaunaako
-                print ("Produkts %s jau eksistee un cena ir vienadaa" % res["name"])  #tad datu baazee nekas netiek ierakstiits
+        reply_from_addtodb = 0
+        if Product.objects.filter(user_id=request.user.id, link_to_picture = res["link_to_picture"]).exists(): #ja taads produkts jau eksistee, 
+            if res["price"] == float(Product.objects.filter(user_id=request.user.id, link_to_picture = res["link_to_picture"])[0].prices.all().latest("date_time_grab").price): #un cena ir vienadaa ar jaunaako
+                reply_from_addtodb = 1 
             else: #tad tiek panjemts produkta id, un db pievienota tikai cena
-                originalid = Product.objects.get(user_id=request.user.id, name = res["name"]).id
+                originalid = Product.objects.get(user_id=request.user.id, link_to_picture = res["link_to_picture"]).id
                 pri = Price(        
                     price = res["price"],
                     price_old = res["price_old"],
@@ -265,9 +276,11 @@ def add_to_db(results, request):
                     product_id = originalid,
                 )
                 pri.save()
+                reply_from_addtodb = 2
         else: #citaadi saglabaaja datu baazee info gan par produktu gan par cenu
             prod = Product(        
                 name = res["name"],
+                url = res["url"],
                 link_to_picture = res["link_to_picture"],
                 store_id = res["store_id"],
                 user_id = request.user.id,
@@ -281,4 +294,4 @@ def add_to_db(results, request):
                 product_id = prod.id,
             )
             pri.save()
-    return 
+    return (reply_from_addtodb)

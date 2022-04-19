@@ -9,6 +9,7 @@ body {
 .item_price_per_unit {color:rgb(119, 79, 4)}
 .discount_period {color: #080;}
 .date_time_grab {color:#000}
+.item_url { color: #0000EE; }
 .store_img img {width:84px;height:47px;}
 .item_img img {width:84px;height:47px;}
 td {
