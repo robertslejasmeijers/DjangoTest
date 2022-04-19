@@ -35,32 +35,40 @@ def addurltodb(request):
             print(reply)
         elif "https://www.rimi.lv/e-veikals/" in searched:
             u = (Url(url=searched, store_id=Store.RIMI_ID, user_id=request.user.id))
-            grabresults = grab_rimi(str(searched))
+            u.save()
+            url_id = Url.objects.filter(url=searched, user_id=request.user.id)[0].id
+            grabresults = grab_rimi(str(searched), url_id)
             if grabresults == []:
                 reply = "Kļūda! No ievadītās RIMI saites neizdevās iegūt datus!"
+                u.delete()
             else:
                 addtodb_results = add_to_db(grabresults, request)
                 if addtodb_results == 1:
                     reply = "Produkts jau bija pievienots, un tā cena ir vienāda ar iepriekšējo cenu."
+                    u.delete()
                 if addtodb_results == 2:
                     reply = "Produkts jau bija pievienots, bet tā cena tika atjaunota."
+                    u.delete()
                 if addtodb_results == 0:
-                    u.save()
                     reply = "Rimi saite un tās produkti ir pievienoti."
                 print(reply)
         elif "https://barbora.lv/" in searched:
             u = (Url(url=searched, store_id=Store.BARBORA_ID, user_id=request.user.id))
-            grabresults = grab_barbora(str(searched))
+            u.save()
+            url_id = Url.objects.filter(url=searched, user_id=request.user.id)[0].id
+            grabresults = grab_barbora(str(searched), url_id)
             if grabresults == []:
                 reply = "Kļūda! No ievadītās BARBORA saites neizdevās iegūt datus!"
+                u.delete()
             else:
                 addtodb_results = add_to_db(grabresults, request)
                 if addtodb_results == 1:
                     reply = "Produkts jau bija pievienots, un tā cena ir vienāda ar iepriekšējo cenu."
+                    u.delete()
                 if addtodb_results == 2:
                     reply = "Produkts jau bija pievienots, bet tā cena tika atjaunota."
+                    u.delete()
                 if addtodb_results == 0:
-                    u.save()
                     reply = "Barbora saite un tās produkti ir pievienoti."
                 print(reply)
         form_addurl = Addurl()
@@ -103,22 +111,21 @@ def deleteurl(request):
 
 @login_required
 def addinfotodb(request):
-    #Product.objects.filter(user_id=request.user.id).delete()
     urlsfromdb = Url.objects.filter(user_id=request.user.id)
     for i in urlsfromdb: 
         print(i.url)
         if i.store_id == Store.RIMI_ID:
-            grabresults = grab_rimi(i.url)
+            grabresults = grab_rimi(i.url, i.id)
             add_to_db(grabresults, request)
         if i.store_id == Store.BARBORA_ID:
-            grabresults = grab_barbora(i.url)
+            grabresults = grab_barbora(i.url, i.id)
             add_to_db(grabresults, request)
-    #grabresults = grab_maxima_sirsniga()
+    grabresults = grab_maxima_sirsniga()
     add_to_db(grabresults, request)
     #del results[:]
     messages.success(request, 'Dati atjaunoti!')
     return redirect('index')
-    #return render (request, "marga/addinfotodb.html")
+    
 
 
 

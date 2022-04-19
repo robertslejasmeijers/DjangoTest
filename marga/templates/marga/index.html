@@ -72,10 +72,10 @@
 
     <td class="item_img"><img src="{{ r.link_to_picture }}"></td>
     
-    {% if r.url == None %}
+    {% if r.link_to_product == None %}
     <td class="item_name">{{ r.name }}</td>
     {% else %}
-    <td class="item_name"> <a href="{{ r.url }}">{{ r.name }}</a></td>
+    <td class="item_name"> <a href="{{ r.link_to_product }}">{{ r.name }}</a></td>
     {% endif %}
 
     <td class="item_price">{{ p.price }}</td>

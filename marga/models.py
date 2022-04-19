@@ -12,14 +12,20 @@ class Store(models.Model):
     BARBORA_ID = 2
     SIRSNIGA_ID = 3
 
-
-        
-class Product(models.Model):
-    name = models.CharField(max_length=255, null=True)
-    link_to_picture = models.URLField(max_length=255, null=True)
+class Url(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     url = models.URLField(max_length=200, null=True)
+        
+class Product(models.Model):
+    name = models.CharField(max_length=255, null=True)
+    link_to_product = models.URLField(max_length=200, null=True)
+    link_to_picture = models.URLField(max_length=255, null=True)
+    store = models.ForeignKey(Store, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    url = models.ForeignKey(Url, related_name="products", on_delete=models.CASCADE, null=True)
+  
+    
     class Meta:
         ordering = ('name', )
     def __str__(self):
@@ -45,10 +51,7 @@ class Price(models.Model):
     class Meta:
         ordering = ('price', )
 
-class Url(models.Model):
-    store = models.ForeignKey(Store, on_delete=models.CASCADE, null=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    url = models.URLField(max_length=200, null=True)
+
 
  #prepopulate database with stores
 try:

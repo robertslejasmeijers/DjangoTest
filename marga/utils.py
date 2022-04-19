@@ -6,7 +6,7 @@ from marga.models import Product, Price, Url, Store
 from django.contrib.auth.models import User
 
 
-def grab_rimi(baseurl):
+def grab_rimi(baseurl, url_id):
             
     proxies = {"http": None, "https": None}
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0"}
@@ -48,13 +48,14 @@ def grab_rimi(baseurl):
         items_url = url
         results.append(dict(
             name = items_title,
-            url = items_url,
+            link_to_product = items_url,
             price = items_price,
             price_old = items_oldprice_value,
             price_per_unit = items_priceperunit,
             link_to_picture = items_picture,
             store_id = Store.RIMI_ID,
             discount_period = items_discount_period,
+            url_id = url_id,
         ))
 
     else: #ja izveeleeta produktu grupa
@@ -91,13 +92,14 @@ def grab_rimi(baseurl):
                     items_url = "https://www.rimi.lv" + i.select('.card__url')[0].get("href")
                     results.append(dict(
                         name = items_title,
-                        url = items_url,
+                        link_to_product = items_url,
                         price = items_price,
                         price_old = items_oldprice_value,
                         price_per_unit = items_priceperunit,
                         link_to_picture = items_picture,
                         store_id = Store.RIMI_ID,
                         discount_period = items_discount_period,
+                        url_id = url_id,
                     ))
             pages -= 1
             pagecount += 1
@@ -105,7 +107,7 @@ def grab_rimi(baseurl):
     return (results)
 
 
-def grab_barbora(baseurl):
+def grab_barbora(baseurl, url_id):
 
     proxies = {"http": None, "https": None}
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0"}
@@ -135,7 +137,7 @@ def grab_barbora(baseurl):
                 items_oldprice_value = None
             else:
                 items_oldprice_value = float (items_oldprice[0].text.replace("€", "").replace(",", "."))
-            items_picture = items[0].select('.b-carousel--slide')[0].select("img")[0].get("src")
+            items_picture = items[0].select('.b-carousel--slide')[0].select("img")[0].get("src").replace("_m.", "_s.")
             items_priceperunit = items[0].select('.b-product-price--extra')[0].text.strip()
             try:
                 items_discount_period = items[0].select('.b-product-info--offer-valid-to')[0].text.split()[-1]
@@ -144,13 +146,14 @@ def grab_barbora(baseurl):
             items_url = url
             results.append(dict(
                 name = items_title,
-                url = items_url,
+                link_to_product = items_url,
                 price = items_price,
                 price_old = items_oldprice_value,
                 price_per_unit = items_priceperunit,
                 link_to_picture = items_picture,
                 store_id = Store.BARBORA_ID,
                 discount_period = items_discount_period,
+                url_id = url_id,
             ))
             break
 
@@ -179,13 +182,14 @@ def grab_barbora(baseurl):
                 items_url = "https://barbora.lv" + i.select('.b-link--product-info')[0].get("href")
                 results.append(dict(
                     name = items_title,
-                    url = items_url,
+                    link_to_product = items_url,
                     price = items_price,
                     price_old = items_oldprice_value,
                     price_per_unit = items_priceperunit,
                     link_to_picture = items_picture,
                     store_id = Store.BARBORA_ID,
                     discount_period = items_discount_period,
+                    url_id = url_id,
                 ))
         if str(pagecount) == pages[-2].text:
             break
@@ -240,13 +244,14 @@ def grab_maxima_sirsniga():
             items_url = None
             results.append(dict(
                 name = items_title,
-                url = items_url,
+                link_to_product = items_url,
                 price = items_price,
                 price_old = items_oldprice_value,
                 price_per_unit = items_priceperunit,
                 link_to_picture = items_picture,
                 store_id = Store.SIRSNIGA_ID,
-                discount_period = items_discount_period
+                discount_period = items_discount_period,
+                url_id = None
             ))
         if offset == 0:
             offset = 8
@@ -280,10 +285,11 @@ def add_to_db(results, request):
         else: #citaadi saglabaaja datu baazee info gan par produktu gan par cenu
             prod = Product(        
                 name = res["name"],
-                url = res["url"],
+                link_to_product = res["link_to_product"],
                 link_to_picture = res["link_to_picture"],
                 store_id = res["store_id"],
                 user_id = request.user.id,
+                url_id = res["url_id"],
             )
             prod.save()
             pri = Price(        
