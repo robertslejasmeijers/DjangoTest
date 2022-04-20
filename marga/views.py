@@ -136,6 +136,8 @@ def searchdb (request):
         return render (request, "marga/index.html", {"form_search": form_search})
     searched = ""
     orderby = "prices__discount"
+    store_id_list = [1,2]
+    store3 = ""
     form_search = Searchdb
     if request.method == "GET":
         form_search = Searchdb(request.GET)
@@ -145,18 +147,24 @@ def searchdb (request):
             orderby = request.GET['orderby']
         except:
             pass
+        try:
+            if request.GET['store3'] == "on":
+                store_id_list = [1,2,3]
+                store3 = "on"
+        except:
+            pass
     if orderby == "prices__date_time_grab":
-        selection = Product.objects.filter(user_id=request.user.id, name__icontains=searched).order_by("-" + orderby)
+        selection = Product.objects.filter(user_id=request.user.id, name__icontains=searched, store__id__in=store_id_list).order_by("-" + orderby)
     elif orderby == "prices__discount":
-        selection = Product.objects.filter(user_id=request.user.id, name__icontains=searched).order_by(F(orderby).desc(nulls_last=True))
+        selection = Product.objects.filter(user_id=request.user.id, name__icontains=searched, store__id__in=store_id_list).order_by(F(orderby).desc(nulls_last=True))
     else: #ja kaartots peec cenas vai atlaides, tad iipashs selection, kur Nulls rezultaati ir peedeejie
-        selection = Product.objects.filter(user_id=request.user.id, name__icontains=searched).order_by(F(orderby).asc(nulls_last=True))
+        selection = Product.objects.filter(user_id=request.user.id, name__icontains=searched, store__id__in=store_id_list).order_by(F(orderby).asc(nulls_last=True))
     selection = list(dict.fromkeys(selection)) #remove duplicates
     p = Paginator(selection, 500)
     page = request.GET.get('page')
     reply = p.get_page(page)
 
-    return render (request, "marga/index.html", {"reply": reply, "form_search": form_search, "searched": searched, "orderby": orderby})
+    return render (request, "marga/index.html", {"reply": reply, "form_search": form_search, "searched": searched, "orderby": orderby, "store3": store3})
       
 
 def test(request):

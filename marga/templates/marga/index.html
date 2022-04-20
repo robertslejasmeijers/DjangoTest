@@ -10,7 +10,7 @@
     
     {% if reply.has_previous %}
     <li class="page-item">
-    <a class="page-link" href="?page={{ reply.previous_page_number }}&name={{ searched }}&orderby={{ orderby }}">&laquo;</a>
+    <a class="page-link" href="?page={{ reply.previous_page_number }}&name={{ searched }}&orderby={{ orderby }}&store3={{ store3 }}">&laquo;</a>
     </li>
     {% endif %}
     
@@ -22,7 +22,7 @@
     
     {% if reply.has_next %}
     <li class="page-item">
-    <a class="page-link" href="?page={{ reply.next_page_number }}&name={{ searched }}&orderby={{ orderby }}">&raquo;</a>
+    <a class="page-link" href="?page={{ reply.next_page_number }}&name={{ searched }}&orderby={{ orderby }}&store3={{ store3 }}">&raquo;</a>
     </li>
     {% endif %}
 
@@ -32,12 +32,12 @@
         Kārtot pēc:
         </button>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__discount">Atlaides</a>
-            <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__date_time_grab">Datuma</a>
-            <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__price">Cenas</a>
-            <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__price_old">Cenas bez atlaides</a>
-            <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=name">Nosaukuma</a>
-            <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=store_id">Veikala</a>
+            <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__discount&store3={{ store3 }}">Atlaides</a>
+            <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__date_time_grab&store3={{ store3 }}">Datuma</a>
+            <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__price&store3={{ store3 }}">Cenas</a>
+            <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=prices__price_old&store3={{ store3 }}">Cenas bez atlaides</a>
+            <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=name&store3={{ store3 }}">Nosaukuma</a>
+            <a class="dropdown-item" href="?page={{ reply.number }}&name={{ searched }}&orderby=store_id&store3={{ store3 }}">Veikala</a>
         </div>
     </div>
 </ul>

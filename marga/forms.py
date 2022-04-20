@@ -1,8 +1,8 @@
 from django import forms
 
 class Searchdb(forms.Form):
-    name = forms.CharField(label="", required=False, max_length=200, widget=forms.TextInput(attrs={'placeholder': 'Meklēt preci', 'class': 'form-control'}))	
-
+    name = forms.CharField(label="", required=False, max_length=200, widget=forms.TextInput(attrs={'placeholder': 'Meklēt preci', 'class': 'form-inline', 'style': 'padding-left: 8px;'}))
+    
 class Addurl(forms.Form):
     name = forms.CharField(label="", required=False, max_length=200, widget=forms.TextInput(attrs={'placeholder': 'Pievienot saiti no Rimi vai Barbora', 'class': 'form-control w-50'}))	
 
