@@ -8,18 +8,17 @@ from django.contrib.auth.models import User
 
 def grab_rimi(baseurl, url_id):
             
-    proxies = {"http": None, "https": None}
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0"}
-
-    #baseurl = "https://www.rimi.lv/e-veikals/lv/produkti/piena-produkti-un-olas/jogurti-un-deserti/biezpiena-sierini/biezpiena-sierins-jeppi-ar-biskv-gars-kr-38g/p/946364"
-    #baseurl = "https://www.rimi.lv/e-veikals/lv/produkti/piena-produkti-un-olas/siers/c/SH-11-9"
-    #baseurl = "https://www.rimi.lv/e-veikals/lv/produkti/augli-un-darzeni/augli-un-ogas/banani/c/SH-2-1-3"
 
     pagecount = 1
     url = baseurl
     results = []
         
-    r = requests.get(url, proxies=proxies, headers=headers)
+    try: 
+        r = requests.get(url, headers=headers)
+    except:
+        print("Nevarēja pieslēgties pie RIMI URL:", url)
+        return results
     items = bs(r.text, 'html.parser').select('.side-cart-adapt')
     if len(items) == 0:
         print("Nevarēja nolasīt datus no RIMI URL:", url)
@@ -28,23 +27,35 @@ def grab_rimi(baseurl, url_id):
     checkhowpages = bs(r.text, 'html.parser').select('.product-grid__item')
     
     if checkhowpages == []: #ja izveeleets tikai viens produkts
-        items_title = items[1].select('.name')[0].text
-        price_eur = items[1].select('div.price-wrapper')[0].select('.price span')[0].text
-        price_cents = items[1].select('div.price-wrapper')[0].select('.price sup')[0].text
-        items_price = float (price_eur + '.' + price_cents)
-        items_oldprice = items[1].select('.price__old-price')
-        if not items_oldprice:
-            items_oldprice_value = None        
-        else:
-            items_oldprice_value = float (items_oldprice[0].text.replace("€", "").replace(",", "."))
-        items_picture = items[1].select('.product__main-image')[0].select("img")[0].get("src").replace(",h_480", ",h_216").replace(",w_480", ",w_216")
-        items_priceperunit = items[1].select('.price-per')[0].text.strip().replace("\n                ", "")
         try:
-            items_discount_period_start = items[1].select('p.notice')[0].text.split()[-3]
-            items_discount_period_end = items[1].select('p.notice')[0].text.split()[-1]
-            items_discount_period = items_discount_period_start + " - " + items_discount_period_end
+            items_title = items[1].select('.name')[0].text
+            price_eur = items[1].select('div.price-wrapper')[0].select('.price span')[0].text
+            price_cents = items[1].select('div.price-wrapper')[0].select('.price sup')[0].text
+            items_price = float (price_eur + '.' + price_cents)
         except:
+            print("Neizdevās iegūt datus par preces nosaukumu vai cenu no RIMI URL:", url)
+            return results
+        try:
+            items_oldprice = items[1].select('.price__old-price')
+            if not items_oldprice:
+                items_oldprice_value = None        
+            else:
+                items_oldprice_value = float (items_oldprice[0].text.replace("€", "").replace(",", "."))
+            items_picture = items[1].select('.product__main-image')[0].select("img")[0].get("src").replace(",h_480", ",h_216").replace(",w_480", ",w_216")
+            items_priceperunit = items[1].select('.price-per')[0].text.strip().replace("\n                ", "")
+            try:
+                items_discount_period_start = items[1].select('p.notice')[0].text.split()[-3]
+                items_discount_period_end = items[1].select('p.notice')[0].text.split()[-1]
+                items_discount_period = items_discount_period_start + " - " + items_discount_period_end
+            except:
+                items_discount_period = None
+        except:
+            print("Neizdevās iegūt datus par oldprice, picture, priceperunit vai discount period no RIMI URL:", url)
+            items_oldprice_value = None
+            items_picture = None
+            items_priceperunit = None
             items_discount_period = None
+            return results
         items_url = url
         results.append(dict(
             name = items_title,
@@ -68,28 +79,46 @@ def grab_rimi(baseurl, url_id):
 
         while pages >=1:
 
-            print('\t URL:', url)  
-
-            r = requests.get(url, proxies=proxies, headers=headers)
+            try: 
+                r = requests.get(url, headers=headers)
+            except:
+                print("Nevarēja pieslēgties pie RIMI URL:", url)
+                return results
 
             items = bs(r.text, 'html.parser').select('.product-grid__item')
+            if len(items) == 0:
+                print("Nevarēja nolasīt datus no RIMI URL:", url)
+                return results
 
             for i in items:
                 items_unavailable = i.select('.card__price-per')[0].text
                 if not "Īslaicīgi nav pieejams" in items_unavailable and not "Ienāc savā profilā" in items_unavailable:
-                    items_title = i.select('.card__name')[0].text
-                    price_eur = i.select('div.card__price-wrapper')[0].select('.price-tag span')[0].text
-                    price_cents = i.select('div.card__price-wrapper')[0].select('.price-tag sup')[0].text
-                    items_price = float (price_eur + '.' + price_cents)
-                    items_oldprice = i.select('.old-price-tag')
-                    if not items_oldprice:
+                    try:
+                        items_title = i.select('.card__name')[0].text
+                        price_eur = i.select('div.card__price-wrapper')[0].select('.price-tag span')[0].text
+                        price_cents = i.select('div.card__price-wrapper')[0].select('.price-tag sup')[0].text
+                        items_price = float (price_eur + '.' + price_cents)
+                    except:
+                        print("Neizdevās iegūt datus par preces nosaukumu vai cenu no RIMI URL:", url)
+                        return results
+                    try:
+                        items_oldprice = i.select('.old-price-tag')
+                        if not items_oldprice:
+                            items_oldprice_value = None
+                        else:
+                            items_oldprice_value = float (items_oldprice[0].text.replace("€", "").replace(",", "."))
+                        items_picture = i.select('div.card__image-wrapper')[0].select("img")[0].get("src")
+                        items_priceperunit = i.select('.card__price-per')[0].text.strip().replace("\n                    ", "")
+                        items_discount_period = None
+                        items_url = "https://www.rimi.lv" + i.select('.card__url')[0].get("href")
+                    except:
+                        print("Neizdevās iegūt datus par oldprice, picture, priceperunit, discount period vai url no RIMI URL:", url)
                         items_oldprice_value = None
-                    else:
-                        items_oldprice_value = float (items_oldprice[0].text.replace("€", "").replace(",", "."))
-                    items_picture = i.select('div.card__image-wrapper')[0].select("img")[0].get("src")
-                    items_priceperunit = i.select('.card__price-per')[0].text.strip().replace("\n                    ", "")
-                    items_discount_period = None
-                    items_url = "https://www.rimi.lv" + i.select('.card__url')[0].get("href")
+                        items_picture = None
+                        items_priceperunit = None
+                        items_discount_period = None
+                        items_url = None
+                        return results
                     results.append(dict(
                         name = items_title,
                         link_to_product = items_url,
@@ -109,19 +138,18 @@ def grab_rimi(baseurl, url_id):
 
 def grab_barbora(baseurl, url_id):
 
-    proxies = {"http": None, "https": None}
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0"}
-
-    #baseurl = "https://barbora.lv/piena-produkti-un-olas/siers"
-    #baseurl = "https://barbora.lv/produkti/kukur-uzk-cheetos-ar-kecupa-garsu-165-g"
 
     pagecount = 1
     url = baseurl
     results = []
       
     while True:
-        print('\t URL:', url)  
-        r = requests.get(url, proxies=proxies, headers=headers)
+        try: 
+            r = requests.get(url, headers=headers)
+        except:
+            print("Nevarēja pieslēgties pie BARBORA URL:", url)
+            return results
         items = bs(r.text, 'html.parser').select('.b-product--desktop-grid')
 
 
@@ -130,20 +158,33 @@ def grab_barbora(baseurl, url_id):
             if len(items) == 0:
                 print("Nevarēja nolasīt datus no BARBORA URL:", url)
                 return results
-            items_title = items[0].select('.b-product-info--title')[0].text
-            items_price = float (items[0].select('.b-product-price-current-number')[0].text.strip().replace("€", "").replace(",", "."))
-            items_oldprice = items[0].select('.b-product-crossed-out-price')
-            if not items_oldprice:
-                items_oldprice_value = None
-            else:
-                items_oldprice_value = float (items_oldprice[0].text.replace("€", "").replace(",", "."))
-            items_picture = items[0].select('.b-carousel--slide')[0].select("img")[0].get("src").replace("_m.", "_s.")
-            items_priceperunit = items[0].select('.b-product-price--extra')[0].text.strip()
             try:
-                items_discount_period = items[0].select('.b-product-info--offer-valid-to')[0].text.split()[-1]
+                items_title = items[0].select('.b-product-info--title')[0].text
+                items_price = float (items[0].select('.b-product-price-current-number')[0].text.strip().replace("€", "").replace(",", "."))
             except:
+                print("Neizdevās iegūt datus par preces nosaukumu vai cenu no BARBORA URL:", url)
+                return results
+            try:
+                items_oldprice = items[0].select('.b-product-crossed-out-price')
+                if not items_oldprice:
+                    items_oldprice_value = None
+                else:
+                    items_oldprice_value = float (items_oldprice[0].text.replace("€", "").replace(",", "."))
+                items_picture = items[0].select('.b-carousel--slide')[0].select("img")[0].get("src").replace("_m.", "_s.")
+                items_priceperunit = items[0].select('.b-product-price--extra')[0].text.strip()
+                try:
+                    items_discount_period = items[0].select('.b-product-info--offer-valid-to')[0].text.split()[-1]
+                except:
+                    items_discount_period = None
+            except:
+                print("Neizdevās iegūt datus par oldprice, picture, priceperunit, discount period no BARBORA URL:", url)
+                items_oldprice_value = None
+                items_picture = None
+                items_priceperunit = None
                 items_discount_period = None
+                return results
             items_url = url
+ 
             results.append(dict(
                 name = items_title,
                 link_to_product = items_url,
@@ -166,20 +207,34 @@ def grab_barbora(baseurl, url_id):
         for i in items:
             items_unavailable = i.select('.b-product-unavailable--wrap')
             if not items_unavailable:
-                items_title = i.select('.b-product-title--desktop')[0].text
-                items_price = float (i.select('.b-product-price-current-number')[0].text.strip().replace("€", "").replace(",", "."))
-                items_oldprice = i.select('.b-product-crossed-out-price')
-                if not items_oldprice:
-                    items_oldprice_value = None
-                else:
-                    items_oldprice_value = float (items_oldprice[0].text.replace("€", "").replace(",", "."))
-                items_picture = i.select('.b-link--product-info')[0].select("img")[0].get("src")
-                items_priceperunit = i.select('.b-product-price--extra')[0].text.strip()
                 try:
-                    items_discount_period = i.select('.b-product-promo-label-primary')[0].get("title").split()[-1]
+                    items_title = i.select('.b-product-title--desktop')[0].text
+                    items_price = float (i.select('.b-product-price-current-number')[0].text.strip().replace("€", "").replace(",", "."))
                 except:
+                    print("Neizdevās iegūt datus par preces nosaukumu vai cenu no BARBORA URL:", url)
+                    return results
+                try:
+                    items_oldprice = i.select('.b-product-crossed-out-price')
+                    if not items_oldprice:
+                        items_oldprice_value = None
+                    else:
+                        items_oldprice_value = float (items_oldprice[0].text.replace("€", "").replace(",", "."))
+                    items_picture = i.select('.b-link--product-info')[0].select("img")[0].get("src")
+                    items_priceperunit = i.select('.b-product-price--extra')[0].text.strip()
+                    try:
+                        items_discount_period = i.select('.b-product-promo-label-primary')[0].get("title").split()[-1]
+                    except:
+                        items_discount_period = None
+                    items_url = "https://barbora.lv" + i.select('.b-link--product-info')[0].get("href")
+                except:
+                    print("Neizdevās iegūt datus par oldprice, picture, priceperunit, discount period vai url no BARBORA URL:", url)
+                    items_oldprice_value = None
+                    items_picture = None
+                    items_priceperunit = None
                     items_discount_period = None
-                items_url = "https://barbora.lv" + i.select('.b-link--product-info')[0].get("href")
+                    items_url = None
+                    return results
+
                 results.append(dict(
                     name = items_title,
                     link_to_product = items_url,
@@ -201,7 +256,6 @@ def grab_barbora(baseurl, url_id):
 
 def grab_maxima_sirsniga():
     
-    proxies = {"http": None, "https": None}
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0"}
 
     baseurl = "https://www.maxima.lv/ajax/sirsnigaloadmore"
@@ -209,11 +263,13 @@ def grab_maxima_sirsniga():
     url = baseurl
     results = []
    
-    print('\t URL:', url)  
-
     offset = 0
     while True:
-        r = requests.post(url, data={"offset": offset}, proxies=proxies, headers=headers)
+        try:
+            r = requests.post(url, data={"offset": offset}, headers=headers)
+        except:
+            print("Nevarēja pieslēgties pie MAXIMA SIRSNĪGA URL:", url)
+            return results
         if offset == 0: #pirmie 8 produkti tiek ielasiiti kaa vienmeer
             items = bs(r.text, 'html.parser').select('.col-group')[0].select(".col-fourth")
             if len(items) == 0:
@@ -225,22 +281,33 @@ def grab_maxima_sirsniga():
             if len(items) == 0:
                 break
         for i in items:
-            items_title = i.select('.title')[0].text
-            price_eur = i.select('.discount .t1_container .t1 .value')[0].text
-            price_cents = i.select('.discount .t1_container .t1 .cents')[0].text
-            items_price = float(price_eur + "." + price_cents)
-            if i.select('.discount .t2_container .t2-sku-two-one') == []: #dazhiem produktiem vecaa cena tiek padota citaadi
-                items_oldprice_eur = i.select('.discount .t2_container .t2 .value')[0].text
-                items_oldprice_cents = i.select('.discount .t2_container .t2 .cents')[0].text
-                items_oldprice_value = float(items_oldprice_eur + "." + items_oldprice_cents)
-            else: 
-                items_oldprice_value = float (i.select('.discount .t2_container .t2')[0].text.replace("€", ""))
-            items_picture = "https://www.maxima.lv" + i.select('.img')[0].select('img')[0].get("src")
-            if i.select('.kg-t1') == []:
+            try:
+                items_title = i.select('.title')[0].text
+                price_eur = i.select('.discount .t1_container .t1 .value')[0].text
+                price_cents = i.select('.discount .t1_container .t1 .cents')[0].text
+                items_price = float(price_eur + "." + price_cents)
+            except:
+                print("Neizdevās iegūt datus par preces nosaukumu vai cenu no MAXIMA SIRSNĪGA URL:", url)
+                return results
+            try:
+                if i.select('.discount .t2_container .t2-sku-two-one') == []: #dazhiem produktiem vecaa cena tiek padota citaadi
+                    items_oldprice_eur = i.select('.discount .t2_container .t2 .value')[0].text
+                    items_oldprice_cents = i.select('.discount .t2_container .t2 .cents')[0].text
+                    items_oldprice_value = float(items_oldprice_eur + "." + items_oldprice_cents)
+                else: 
+                    items_oldprice_value = float (i.select('.discount .t2_container .t2')[0].text.replace("€", ""))
+                items_picture = "https://www.maxima.lv" + i.select('.img')[0].select('img')[0].get("src")
+                if i.select('.kg-t1') == []:
+                    items_priceperunit = None
+                else:
+                    items_priceperunit = i.select('.kg-t1')[0].text
+                items_discount_period = i.select('.tags_primary .i')[0].get("data-alt")[-15:]
+            except:
+                print("Neizdevās iegūt datus par oldprice, picture, priceperunit vai discount period no MAXIMA SIRSNĪGA URL:", url)
+                items_oldprice_value = None
+                items_picture = None
                 items_priceperunit = None
-            else:
-                items_priceperunit = i.select('.kg-t1')[0].text
-            items_discount_period = i.select('.tags_primary .i')[0].get("data-alt")[-15:]
+                items_discount_period = None
             items_url = None
             results.append(dict(
                 name = items_title,
@@ -266,7 +333,6 @@ def grab_maxima_sirsniga():
 def add_to_db(results, request):
    
     for res in results: 
-        print(res)
         reply_from_addtodb = 0
         if Product.objects.filter(user_id=request.user.id, link_to_picture = res["link_to_picture"]).exists(): #ja taads produkts jau eksistee, 
             if res["price"] == float(Product.objects.filter(user_id=request.user.id, link_to_picture = res["link_to_picture"])[0].prices.all().latest("date_time_grab").price): #un cena ir vienadaa ar jaunaako
