@@ -12,18 +12,18 @@ from marga.utils import *
 #     return a
 
 @app.task
-def task_addinfotodb(request):
-    urlsfromdb = Url.objects.filter(user_id=request.user.id)
+def task_addinfotodb(userid):
+    urlsfromdb = Url.objects.filter(user_id=userid)
     for i in urlsfromdb: 
         print(i.url)
         if i.store_id == Store.RIMI_ID:
             grabresults = grab_rimi(i.url, i.id)
-            add_to_db(grabresults, request)
+            add_to_db(grabresults, userid)
         if i.store_id == Store.BARBORA_ID:
             grabresults = grab_barbora(i.url, i.id)
-            add_to_db(grabresults, request)
+            add_to_db(grabresults, userid)
     grabresults = grab_maxima_sirsniga()
-    add_to_db(grabresults, request)
+    add_to_db(grabresults, userid)
     return
 
 

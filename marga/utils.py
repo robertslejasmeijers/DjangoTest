@@ -330,15 +330,15 @@ def grab_maxima_sirsniga():
     return (results)
 
 
-def add_to_db(results, request):
+def add_to_db(results, userid):
    
     for res in results: 
         reply_from_addtodb = 0
-        if Product.objects.filter(user_id=request.user.id, link_to_picture = res["link_to_picture"]).exists(): #ja taads produkts jau eksistee, 
-            if res["price"] == float(Product.objects.filter(user_id=request.user.id, link_to_picture = res["link_to_picture"])[0].prices.all().latest("date_time_grab").price): #un cena ir vienadaa ar jaunaako
+        if Product.objects.filter(user_id=userid, link_to_picture = res["link_to_picture"]).exists(): #ja taads produkts jau eksistee, 
+            if res["price"] == float(Product.objects.filter(user_id=userid, link_to_picture = res["link_to_picture"])[0].prices.all().latest("date_time_grab").price): #un cena ir vienadaa ar jaunaako
                 reply_from_addtodb = 1 
             else: #tad tiek panjemts produkta id, un db pievienota tikai cena
-                originalid = Product.objects.get(user_id=request.user.id, link_to_picture = res["link_to_picture"]).id
+                originalid = Product.objects.get(user_id=userid, link_to_picture = res["link_to_picture"]).id
                 pri = Price(        
                     price = res["price"],
                     price_old = res["price_old"],
@@ -354,7 +354,7 @@ def add_to_db(results, request):
                 link_to_product = res["link_to_product"],
                 link_to_picture = res["link_to_picture"],
                 store_id = res["store_id"],
-                user_id = request.user.id,
+                user_id = userid,
                 url_id = res["url_id"],
             )
             prod.save()
