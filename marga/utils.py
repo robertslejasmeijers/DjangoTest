@@ -151,7 +151,7 @@ def grab_barbora(baseurl, url_id):
             print("Nevarēja pieslēgties pie BARBORA URL:", url)
             return results
         items = bs(r.text, 'html.parser').select('.b-product--desktop-grid')
-
+        print(url)
 
         if items == []: #ja izveeleets tikai viens produkts
             items = bs(r.text, 'html.parser').select('.b-products-allow-desktop-view')

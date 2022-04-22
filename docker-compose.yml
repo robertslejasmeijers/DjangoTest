@@ -3,7 +3,7 @@ services:
   db:
     image: postgres
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
@@ -15,7 +15,25 @@ services:
       - .:/app
     ports:
       - 8000:8000
-    container_name: djangotest_container
+    container_name: rmscraper_container
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DEBUG=1
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_BACKEND_URL=redis://redis:6379/0
     depends_on:
       - db
+      - redis
+  celery:
+    build: .
+    command: celery -A rmscraper worker -l info
+    volumes:
+      - .:/app
+    depends_on:
+      - app
+      - redis
+  redis:
+    image: "redis:alpine"
+volumes:
+  data:

@@ -1,5 +1,6 @@
-import re
-from urllib import response
+from __future__ import absolute_import, unicode_literals
+from rmscraper.celery import app
+
 from django.shortcuts import render, redirect
 from django.http import HttpRequest
 from django.core.paginator import Paginator
@@ -15,6 +16,9 @@ from marga.serializers import ProductsSerializer
 
 from marga.utils import *
 from .forms import Searchdb, Addurl, Deleteurl
+
+from marga.tasks import *
+
  
 
 @login_required
@@ -125,6 +129,10 @@ def addinfotodb(request):
     #del results[:]
     messages.success(request, 'Dati atjaunoti!')
     return redirect('index')
+
+
+
+
     
 
 
@@ -166,9 +174,12 @@ def searchdb (request):
 
     return render (request, "marga/index.html", {"reply": reply, "form_search": form_search, "searched": searched, "orderby": orderby, "store3": store3})
       
-
 def test(request):
-    return render(request, "marga/test.html")
+    a = task_addinfotodb.delay(request)
+    print(a)
+    return redirect('index')
+
+
 
 
 def searchdbvalues(request):
