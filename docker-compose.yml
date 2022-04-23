@@ -25,15 +25,27 @@ services:
     depends_on:
       - db
       - redis
+  redis:
+    image: "redis:alpine"
   celery:
     build: .
     command: celery -A rmscraper worker -l info
     volumes:
       - .:/app
     depends_on:
-      - app
+      - db
       - redis
-  redis:
-    image: "redis:alpine"
+      - app
+  celery-beat:
+    build: .
+    command: celery -A rmscraper beat -l INFO
+    volumes:
+      - .:/app
+    depends_on:
+    - db
+    - app
+    - redis
+    - celery
+    
 volumes:
   data:

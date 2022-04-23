@@ -111,7 +111,7 @@ def deleteurl(request):
 @login_required
 def addinfotodb(request):
     userid = request.user.id
-    task_addinfotodb.delay(userid)
+    ondemand_addinfotodb.delay(userid)
     messages.success(request, 'Dati tiek atjaunoti!')
     return redirect('index')
 

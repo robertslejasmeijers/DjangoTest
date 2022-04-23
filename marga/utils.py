@@ -13,6 +13,8 @@ def grab_rimi(baseurl, url_id):
     pagecount = 1
     url = baseurl
     results = []
+
+    print(url)
         
     try: 
         r = requests.get(url, headers=headers)
@@ -133,6 +135,7 @@ def grab_rimi(baseurl, url_id):
             pages -= 1
             pagecount += 1
             url = baseurl + "?page=%i" % pagecount
+            print(url)
     return (results)
 
 
@@ -262,6 +265,8 @@ def grab_maxima_sirsniga():
 
     url = baseurl
     results = []
+
+    print(url)
    
     offset = 0
     while True:

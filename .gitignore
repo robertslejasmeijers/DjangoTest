@@ -1,5 +1,7 @@
 __pycache__/
 /data
+/.data
 /tmp
 /.vscode
 db.sqlite3
+celerybeat-schedule
