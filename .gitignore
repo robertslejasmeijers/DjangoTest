@@ -3,5 +3,7 @@ __pycache__/
 /.data
 /tmp
 /.vscode
+/log
+*.log
 db.sqlite3
 celerybeat-schedule

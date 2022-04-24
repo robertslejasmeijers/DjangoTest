@@ -4,6 +4,7 @@ import json
 
 from marga.models import Product, Price, Url, Store
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
 
 
 def grab_rimi(baseurl, url_id):
@@ -372,3 +373,8 @@ def add_to_db(results, userid):
             )
             pri.save()
     return (reply_from_addtodb)
+
+
+def send_email(msg):
+    send_mail('Marga log', msg, '"Marga" <roberts.lejasmeijers@gmail.com>', ['roberts.lejasmeijers@gmail.com'], fail_silently=False)
+    return

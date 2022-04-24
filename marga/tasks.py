@@ -7,7 +7,7 @@ from marga.utils import *
 
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(crontab(minute=27, hour=20), periodic_addinfotodb.s(), name='periodic_addinfotodb')
+    sender.add_periodic_task(crontab(minute=35, hour=20), periodic_addinfotodb.s(), name='periodic_addinfotodb')
 
 
 @app.task

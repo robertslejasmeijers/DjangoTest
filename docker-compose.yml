@@ -17,11 +17,6 @@ services:
       - 8000:8000
     container_name: rmscraper_container
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
-    environment:
-      - DEBUG=1
-      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_BACKEND_URL=redis://redis:6379/0
     depends_on:
       - db
       - redis
@@ -46,6 +41,15 @@ services:
     - app
     - redis
     - celery
+  smtp:
+    image: namshi/smtp
+    container_name: smtp_relay
+    restart: always
+    ports:
+     - "25:25"
+    environment:
+     - RELAY_NETWORKS=:192.168.0.0/24
+     - MAILNAME=marga
     
 volumes:
   data:

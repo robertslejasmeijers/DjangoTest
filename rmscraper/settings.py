@@ -23,12 +23,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-qqpof1b&^y8od62!o=@l0ahu69%3+vt_daosx5@t$1c+)xs8e0'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -165,5 +159,46 @@ CELERY_BROKER_URL = os.environ.get('CELERY_BROKER', 'redis://redis:6379/0')
 CELERY_RESULT_BACKEND = os.environ.get('CELERY_BROKER', 'redis://redis:6379/0')
 CELERY_TIMEZONE = 'Europe/Riga'
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+    'f1': {
+        'format': '{asctime} {message} {name} {funcName} {lineno}',
+        'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'f1'
+        },        
+        'file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': 'log/log.log',
+            'formatter': 'f1'
+        },
+        'mail_admins': {
+            'level': 'CRITICAL',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'f1'
+        },
+    },
+    'loggers': {
+        'marga': {
+            'handlers': ['console', 'file', 'mail_admins'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
 
+DEBUG = True
+
+ADMINS = [("Roberts Lejasmeijers", "roberts.lejasmeijers@gmail.com")]
+SERVER_EMAIL = '"Marga" <roberts.lejasmeijers@gmail.com>'
+
+EMAIL_HOST = 'smtp'
 

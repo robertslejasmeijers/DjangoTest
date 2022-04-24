@@ -7,17 +7,18 @@ from django.core.paginator import Paginator
 from django.db.models import F
 from django.contrib import messages
 
-from marga.models import Product, Price, Url, Store
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from rest_framework.viewsets import ModelViewSet
 
 from marga.serializers import ProductsSerializer
-
+from marga.models import Product, Price, Url, Store
 from marga.utils import *
 from .forms import Searchdb, Addurl, Deleteurl
-
 from marga.tasks import *
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 @login_required
@@ -150,11 +151,13 @@ def searchdb (request):
     p = Paginator(selection, 500)
     page = request.GET.get('page')
     reply = p.get_page(page)
-
+    logger.error(orderby)
     return render (request, "marga/index.html", {"reply": reply, "form_search": form_search, "searched": searched, "orderby": orderby, "store3": store3})
-      
+
+  
 
 def test(request):
+    #send_mail('Marga log', 'Just testing3', '"Marga" <roberts.lejasmeijers@gmail.com>', ['roberts.lejasmeijers@gmail.com'], fail_silently=False)
     return redirect('index')
 
 
