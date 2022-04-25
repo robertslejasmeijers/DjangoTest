@@ -6,6 +6,9 @@ from marga.models import Product, Price, Url, Store
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 def grab_rimi(baseurl, url_id):
             
@@ -15,16 +18,17 @@ def grab_rimi(baseurl, url_id):
     url = baseurl
     results = []
 
-    print(url)
-        
     try: 
         r = requests.get(url, headers=headers)
+        if r.status_code != 200:
+            logger.warning("Request atgrieztais kods nebija 200, bet:", r.status_code)
+            return results
     except:
-        print("Nevarēja pieslēgties pie RIMI URL:", url)
+        logger.warning("Nevarēja pieslēgties pie RIMI URL:", url)
         return results
     items = bs(r.text, 'html.parser').select('.side-cart-adapt')
     if len(items) == 0:
-        print("Nevarēja nolasīt datus no RIMI URL:", url)
+        logger.warning("Nevarēja nolasīt datus no RIMI URL:", url)
         return results
 
     checkhowpages = bs(r.text, 'html.parser').select('.product-grid__item')
@@ -36,7 +40,7 @@ def grab_rimi(baseurl, url_id):
             price_cents = items[1].select('div.price-wrapper')[0].select('.price sup')[0].text
             items_price = float (price_eur + '.' + price_cents)
         except:
-            print("Neizdevās iegūt datus par preces nosaukumu vai cenu no RIMI URL:", url)
+            logger.warning("Neizdevās iegūt datus par preces nosaukumu vai cenu no RIMI URL:", url)
             return results
         try:
             items_oldprice = items[1].select('.price__old-price')
@@ -53,7 +57,7 @@ def grab_rimi(baseurl, url_id):
             except:
                 items_discount_period = None
         except:
-            print("Neizdevās iegūt datus par oldprice, picture, priceperunit vai discount period no RIMI URL:", url)
+            logger.warning("Neizdevās iegūt datus par oldprice, picture, priceperunit vai discount period no RIMI URL:", url)
             items_oldprice_value = None
             items_picture = None
             items_priceperunit = None
@@ -84,13 +88,16 @@ def grab_rimi(baseurl, url_id):
 
             try: 
                 r = requests.get(url, headers=headers)
+                if r.status_code != 200:
+                    logger.warning("Request atgrieztais kods nebija 200, bet:", r.status_code)
+                    return results
             except:
-                print("Nevarēja pieslēgties pie RIMI URL:", url)
+                logger.warning("Nevarēja pieslēgties pie RIMI URL:", url)
                 return results
 
             items = bs(r.text, 'html.parser').select('.product-grid__item')
             if len(items) == 0:
-                print("Nevarēja nolasīt datus no RIMI URL:", url)
+                logger.warning("Nevarēja nolasīt datus no RIMI URL:", url)
                 return results
 
             for i in items:
@@ -102,7 +109,7 @@ def grab_rimi(baseurl, url_id):
                         price_cents = i.select('div.card__price-wrapper')[0].select('.price-tag sup')[0].text
                         items_price = float (price_eur + '.' + price_cents)
                     except:
-                        print("Neizdevās iegūt datus par preces nosaukumu vai cenu no RIMI URL:", url)
+                        logger.warning("Neizdevās iegūt datus par preces nosaukumu vai cenu no RIMI URL:", url)
                         return results
                     try:
                         items_oldprice = i.select('.old-price-tag')
@@ -115,7 +122,7 @@ def grab_rimi(baseurl, url_id):
                         items_discount_period = None
                         items_url = "https://www.rimi.lv" + i.select('.card__url')[0].get("href")
                     except:
-                        print("Neizdevās iegūt datus par oldprice, picture, priceperunit, discount period vai url no RIMI URL:", url)
+                        logger.warning("Neizdevās iegūt datus par oldprice, picture, priceperunit, discount period vai url no RIMI URL:", url)
                         items_oldprice_value = None
                         items_picture = None
                         items_priceperunit = None
@@ -136,7 +143,6 @@ def grab_rimi(baseurl, url_id):
             pages -= 1
             pagecount += 1
             url = baseurl + "?page=%i" % pagecount
-            print(url)
     return (results)
 
 
@@ -151,22 +157,24 @@ def grab_barbora(baseurl, url_id):
     while True:
         try: 
             r = requests.get(url, headers=headers)
+            if r.status_code != 200:
+                logger.warning("Request atgrieztais kods nebija 200, bet:", r.status_code)
+                return results
         except:
-            print("Nevarēja pieslēgties pie BARBORA URL:", url)
+            logger.warning("Nevarēja pieslēgties pie BARBORA URL:", url)
             return results
         items = bs(r.text, 'html.parser').select('.b-product--desktop-grid')
-        print(url)
 
         if items == []: #ja izveeleets tikai viens produkts
             items = bs(r.text, 'html.parser').select('.b-products-allow-desktop-view')
             if len(items) == 0:
-                print("Nevarēja nolasīt datus no BARBORA URL:", url)
+                logger.warning("Nevarēja nolasīt datus no BARBORA URL:", url)
                 return results
             try:
                 items_title = items[0].select('.b-product-info--title')[0].text
                 items_price = float (items[0].select('.b-product-price-current-number')[0].text.strip().replace("€", "").replace(",", "."))
             except:
-                print("Neizdevās iegūt datus par preces nosaukumu vai cenu no BARBORA URL:", url)
+                logger.warning("Neizdevās iegūt datus par preces nosaukumu vai cenu no BARBORA URL:", url)
                 return results
             try:
                 items_oldprice = items[0].select('.b-product-crossed-out-price')
@@ -181,7 +189,7 @@ def grab_barbora(baseurl, url_id):
                 except:
                     items_discount_period = None
             except:
-                print("Neizdevās iegūt datus par oldprice, picture, priceperunit, discount period no BARBORA URL:", url)
+                logger.warning("Neizdevās iegūt datus par oldprice, picture, priceperunit, discount period no BARBORA URL:", url)
                 items_oldprice_value = None
                 items_picture = None
                 items_priceperunit = None
@@ -205,7 +213,7 @@ def grab_barbora(baseurl, url_id):
         #ja izveeleeta produktu grupa:
         pages = bs(r.text, 'html.parser').select('.b-pagination-wrapper .pagination li a')
         if len(items) == 0:
-            print("Nevarēja nolasīt datus no BARBORA URL:", url)
+            logger.warning("Nevarēja nolasīt datus no BARBORA URL:", url)
             return results
 
         for i in items:
@@ -215,7 +223,7 @@ def grab_barbora(baseurl, url_id):
                     items_title = i.select('.b-product-title--desktop')[0].text
                     items_price = float (i.select('.b-product-price-current-number')[0].text.strip().replace("€", "").replace(",", "."))
                 except:
-                    print("Neizdevās iegūt datus par preces nosaukumu vai cenu no BARBORA URL:", url)
+                    logger.warning("Neizdevās iegūt datus par preces nosaukumu vai cenu no BARBORA URL:", url)
                     return results
                 try:
                     items_oldprice = i.select('.b-product-crossed-out-price')
@@ -231,7 +239,7 @@ def grab_barbora(baseurl, url_id):
                         items_discount_period = None
                     items_url = "https://barbora.lv" + i.select('.b-link--product-info')[0].get("href")
                 except:
-                    print("Neizdevās iegūt datus par oldprice, picture, priceperunit, discount period vai url no BARBORA URL:", url)
+                    logger.warning("Neizdevās iegūt datus par oldprice, picture, priceperunit, discount period vai url no BARBORA URL:", url)
                     items_oldprice_value = None
                     items_picture = None
                     items_priceperunit = None
@@ -267,19 +275,20 @@ def grab_maxima_sirsniga():
     url = baseurl
     results = []
 
-    print(url)
-   
     offset = 0
     while True:
         try:
             r = requests.post(url, data={"offset": offset}, headers=headers)
+            if r.status_code != 200:
+                logger.warning("Request atgrieztais kods nebija 200, bet:", r.status_code)
+                return results
         except:
-            print("Nevarēja pieslēgties pie MAXIMA SIRSNĪGA URL:", url)
+            logger.warning("Nevarēja pieslēgties pie MAXIMA SIRSNĪGA URL:", url)
             return results
         if offset == 0: #pirmie 8 produkti tiek ielasiiti kaa vienmeer
             items = bs(r.text, 'html.parser').select('.col-group')[0].select(".col-fourth")
             if len(items) == 0:
-                print("Nevarēja nolasīt datus no MAXIMA URL:", url)
+                logger.warning("Nevarēja nolasīt datus no MAXIMA URL:", url)
                 return results
         else: #naakamie produkti, kas paraadaas tikai lapu skrolleejot zemaak, tiek ielasiiti peec citas metodes
             itemshtml = (json.loads(r.text)["html"]) #atgrieztais json formaata r.text tiek paarveidots par dict no kura tiek panjemts html
@@ -293,7 +302,7 @@ def grab_maxima_sirsniga():
                 price_cents = i.select('.discount .t1_container .t1 .cents')[0].text
                 items_price = float(price_eur + "." + price_cents)
             except:
-                print("Neizdevās iegūt datus par preces nosaukumu vai cenu no MAXIMA SIRSNĪGA URL:", url)
+                logger.warning("Neizdevās iegūt datus par preces nosaukumu vai cenu no MAXIMA SIRSNĪGA URL:", url)
                 return results
             try:
                 if i.select('.discount .t2_container .t2-sku-two-one') == []: #dazhiem produktiem vecaa cena tiek padota citaadi
@@ -309,7 +318,7 @@ def grab_maxima_sirsniga():
                     items_priceperunit = i.select('.kg-t1')[0].text
                 items_discount_period = i.select('.tags_primary .i')[0].get("data-alt")[-15:]
             except:
-                print("Neizdevās iegūt datus par oldprice, picture, priceperunit vai discount period no MAXIMA SIRSNĪGA URL:", url)
+                logger.warning("Neizdevās iegūt datus par oldprice, picture, priceperunit vai discount period no MAXIMA SIRSNĪGA URL:", url)
                 items_oldprice_value = None
                 items_picture = None
                 items_priceperunit = None
