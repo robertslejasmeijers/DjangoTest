@@ -16,7 +16,7 @@ services:
     ports:
       - 8000:8000
     container_name: rmscraper_container
-    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "uwsgi --socket :8000 --module rmscraper.wsgi"
     depends_on:
       - db
       - redis
@@ -50,6 +50,15 @@ services:
     environment:
      - RELAY_NETWORKS=:192.168.0.0/24
      - MAILNAME=marga
+  nginx:
+    image: nginx
+    container_name: nginx_container
+    restart: always
+    ports:
+     - "80:80"
+    volumes:
+      - .:/app
+    command: sh -c "rm /etc/nginx/conf.d/* && cp /app/nginx/mysite_nginx.conf /etc/nginx/conf.d && nginx -g 'daemon off;'"
     
 volumes:
   data:

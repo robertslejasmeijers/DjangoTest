@@ -4,8 +4,9 @@ __pycache__/
 /tmp
 /.vscode
 /log
-/
+/settings/prod.py
 *.log
 .env
 db.sqlite3
 celerybeat-schedule
+mysite.sock
