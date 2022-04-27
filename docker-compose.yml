@@ -51,14 +51,13 @@ services:
      - RELAY_NETWORKS=:192.168.0.0/24
      - MAILNAME=marga
   nginx:
-    image: nginx
-    container_name: nginx_container
+    build: 
+      context: ./nginx
     restart: always
-    ports:
-     - "80:80"
+    container_name: nginx_container
     volumes:
       - .:/app
-    command: sh -c "rm /etc/nginx/conf.d/* && cp /app/nginx/mysite_nginx.conf /etc/nginx/conf.d && nginx -g 'daemon off;'"
-    
+    ports:
+      - "80:80"       
 volumes:
   data:

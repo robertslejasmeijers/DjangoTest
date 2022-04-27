@@ -121,7 +121,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+
+#STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -154,9 +156,9 @@ LOGGING = {
             'formatter': 'f1'
         },        
         'file': {
-            'level': 'WARNING',
+            'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': 'log/log.log',
+            'filename': os.path.join(BASE_DIR, 'log/log.log'),
             'formatter': 'f1'
         },
         'mail_admins': {
@@ -166,7 +168,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'marga': {
+        'rmscraper': {
             'handlers': ['console', 'file', 'mail_admins'],
             'level': 'DEBUG',
             'propagate': True,
