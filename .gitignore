@@ -4,7 +4,7 @@ __pycache__/
 /tmp
 /.vscode
 /log
-/settings/prod.py
+/rmscraper/settings/prod.py
 *.log
 .env
 db.sqlite3

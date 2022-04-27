@@ -16,7 +16,7 @@ services:
     ports:
       - 8000:8000
     container_name: rmscraper_container
-    command: sh -c "uwsgi --socket :8000 --module rmscraper.wsgi"
+    command: sh -c "uwsgi --socket mysite.sock --module rmscraper.wsgi --chmod-socket=666"
     depends_on:
       - db
       - redis
