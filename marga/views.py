@@ -1,11 +1,9 @@
-from __future__ import absolute_import, unicode_literals
-from rmscraper.celery import app
-
 from django.shortcuts import render, redirect
 from django.http import HttpRequest
 from django.core.paginator import Paginator
-from django.db.models import F
 from django.contrib import messages
+from django.db.models import F
+from django.db.models import Q
 
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -130,7 +128,7 @@ def searchdb (request):
     if request.method == "GET":
         form_search = Searchdb(request.GET)
         if form_search.is_valid():
-            searched = form_search.cleaned_data["name"]
+            all_searched = form_search.cleaned_data["name"]
         try:
             orderby = request.GET['orderby']
         except:
@@ -141,12 +139,17 @@ def searchdb (request):
                 store3 = "on"
         except:
             pass
+    searched = all_searched
+    all_searched = all_searched.split() #visu mekleeto sadala pa vaardiem
+    q = Q()
+    for word in all_searched:
+        q = q & Q(name__icontains=word) #izveido vienu Q objektu, kuraa ietverti visi mekleetie vaardi
     if orderby == "prices__date_time_grab":
-        selection = Product.objects.filter(user_id=request.user.id, name__icontains=searched, store__id__in=store_id_list).order_by("-" + orderby)
+        selection = Product.objects.filter(q, user=request.user, store__id__in=store_id_list).order_by("-" + orderby)
     elif orderby == "prices__discount":
-        selection = Product.objects.filter(user_id=request.user.id, name__icontains=searched, store__id__in=store_id_list).order_by(F(orderby).desc(nulls_last=True))
+        selection = Product.objects.filter(q, user=request.user, store__id__in=store_id_list).order_by(F(orderby).desc(nulls_last=True))
     else: #ja kaartots peec cenas vai atlaides, tad iipashs selection, kur Nulls rezultaati ir peedeejie
-        selection = Product.objects.filter(user_id=request.user.id, name__icontains=searched, store__id__in=store_id_list).order_by(F(orderby).asc(nulls_last=True))
+        selection = Product.objects.filter(q, user=request.user, store__id__in=store_id_list).order_by(F(orderby).asc(nulls_last=True))
     selection = list(dict.fromkeys(selection)) #remove duplicates
     p = Paginator(selection, 500)
     page = request.GET.get('page')
