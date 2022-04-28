@@ -151,7 +151,6 @@ def searchdb (request):
     p = Paginator(selection, 500)
     page = request.GET.get('page')
     reply = p.get_page(page)
-    logging.warning("tikai tests")
     return render (request, "marga/index.html", {"reply": reply, "form_search": form_search, "searched": searched, "orderby": orderby, "store3": store3})
 
   

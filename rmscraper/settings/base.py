@@ -145,7 +145,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
     'f1': {
-        'format': '{asctime} {message} {name} {funcName} {lineno}',
+        'format': '{levelname} {asctime} {message} {name} {funcName} {lineno}',
         'style': '{',
         },
     },
@@ -168,7 +168,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'rmscraper': {
+        '': {
             'handlers': ['console', 'file', 'mail_admins'],
             'level': 'DEBUG',
             'propagate': True,
