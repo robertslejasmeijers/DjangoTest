@@ -151,12 +151,12 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'f1'
         },        
         'file': {
-            'level': 'DEBUG',
+            'level': 'WARNING',
             'class': 'logging.FileHandler',
             'filename': os.path.join(BASE_DIR, 'log/log.log'),
             'formatter': 'f1'
@@ -168,9 +168,9 @@ LOGGING = {
         },
     },
     'loggers': {
-        '': {
+        'root': {
             'handlers': ['console', 'file', 'mail_admins'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': True,
         },
     },

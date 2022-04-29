@@ -24,7 +24,7 @@ services:
     image: "redis:alpine"
   celery:
     build: .
-    command: celery -A rmscraper worker -l info
+    command: celery -A rmscraper worker -l INFO
     volumes:
       - .:/app
     depends_on:

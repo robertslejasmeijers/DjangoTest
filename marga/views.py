@@ -19,6 +19,62 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+# @login_required
+# def addurltodb(request):
+#     reply = ""
+#     userid = request.user.id
+#     allurls = Url.objects.filter(user_id=request.user.id)
+#     if request.method == "POST":
+#         #searched = (request.POST)["urluser"]
+#         form_addurl = Addurl(request.POST)
+#         if form_addurl.is_valid():
+#             searched = form_addurl.cleaned_data["name"]
+#         if "https://barbora.lv/" not in searched and "https://www.rimi.lv/e-veikals/" not in searched:
+#             reply = "Saite ir nepareiza. Pievienot var tikai Rimi vai Barbora produkta vai produktu grupas saiti."
+#         if Url.objects.filter(url=searched, user_id=request.user.id).exists():
+#             reply = "Šī saite jau bija pievienota!"
+#         elif "https://www.rimi.lv/e-veikals/" in searched:
+#             u = (Url(url=searched, store_id=Store.RIMI_ID, user_id=request.user.id))
+#             u.save()
+#             url_id = Url.objects.filter(url=searched, user_id=request.user.id)[0].id
+#             grabresults = grab_rimi(str(searched), url_id)
+#             if grabresults == []:
+#                 reply = "Kļūda! No ievadītās RIMI saites neizdevās iegūt datus!"
+#                 u.delete()
+#             else:
+#                 addtodb_results = add_to_db(grabresults, userid)
+#                 if addtodb_results == 1:
+#                     reply = "Produkts jau bija pievienots, un tā cena ir vienāda ar iepriekšējo cenu."
+#                     u.delete()
+#                 if addtodb_results == 2:
+#                     reply = "Produkts jau bija pievienots, bet tā cena tika atjaunota."
+#                     u.delete()
+#                 if addtodb_results == 0:
+#                     reply = "Rimi saite un tās produkti ir pievienoti."
+#         elif "https://barbora.lv/" in searched:
+#             u = (Url(url=searched, store_id=Store.BARBORA_ID, user_id=request.user.id))
+#             u.save()
+#             url_id = Url.objects.filter(url=searched, user_id=request.user.id)[0].id
+#             grabresults = grab_barbora(str(searched), url_id)
+#             if grabresults == []:
+#                 reply = "Kļūda! No ievadītās BARBORA saites neizdevās iegūt datus!"
+#                 u.delete()
+#             else:
+#                 addtodb_results = add_to_db(grabresults, userid)
+#                 if addtodb_results == 1:
+#                     reply = "Produkts jau bija pievienots, un tā cena ir vienāda ar iepriekšējo cenu."
+#                     u.delete()
+#                 if addtodb_results == 2:
+#                     reply = "Produkts jau bija pievienots, bet tā cena tika atjaunota."
+#                     u.delete()
+#                 if addtodb_results == 0:
+#                     reply = "Barbora saite un tās produkti ir pievienoti."
+#         form_addurl = Addurl()
+#         return render (request, "marga/addurltodb.html", {"reply": reply, "allurls": allurls, "form_addurl": form_addurl})
+#     else:
+#         form_addurl = Addurl
+#         return render (request, "marga/addurltodb.html", {"allurls": allurls , "form_addurl": form_addurl})
+
 @login_required
 def addurltodb(request):
     reply = ""
@@ -33,42 +89,9 @@ def addurltodb(request):
             reply = "Saite ir nepareiza. Pievienot var tikai Rimi vai Barbora produkta vai produktu grupas saiti."
         if Url.objects.filter(url=searched, user_id=request.user.id).exists():
             reply = "Šī saite jau bija pievienota!"
-        elif "https://www.rimi.lv/e-veikals/" in searched:
-            u = (Url(url=searched, store_id=Store.RIMI_ID, user_id=request.user.id))
-            u.save()
-            url_id = Url.objects.filter(url=searched, user_id=request.user.id)[0].id
-            grabresults = grab_rimi(str(searched), url_id)
-            if grabresults == []:
-                reply = "Kļūda! No ievadītās RIMI saites neizdevās iegūt datus!"
-                u.delete()
-            else:
-                addtodb_results = add_to_db(grabresults, userid)
-                if addtodb_results == 1:
-                    reply = "Produkts jau bija pievienots, un tā cena ir vienāda ar iepriekšējo cenu."
-                    u.delete()
-                if addtodb_results == 2:
-                    reply = "Produkts jau bija pievienots, bet tā cena tika atjaunota."
-                    u.delete()
-                if addtodb_results == 0:
-                    reply = "Rimi saite un tās produkti ir pievienoti."
-        elif "https://barbora.lv/" in searched:
-            u = (Url(url=searched, store_id=Store.BARBORA_ID, user_id=request.user.id))
-            u.save()
-            url_id = Url.objects.filter(url=searched, user_id=request.user.id)[0].id
-            grabresults = grab_barbora(str(searched), url_id)
-            if grabresults == []:
-                reply = "Kļūda! No ievadītās BARBORA saites neizdevās iegūt datus!"
-                u.delete()
-            else:
-                addtodb_results = add_to_db(grabresults, userid)
-                if addtodb_results == 1:
-                    reply = "Produkts jau bija pievienots, un tā cena ir vienāda ar iepriekšējo cenu."
-                    u.delete()
-                if addtodb_results == 2:
-                    reply = "Produkts jau bija pievienots, bet tā cena tika atjaunota."
-                    u.delete()
-                if addtodb_results == 0:
-                    reply = "Barbora saite un tās produkti ir pievienoti."
+        else: 
+            ondemand_addurltodb.delay(searched, userid)
+            reply = "Saite ir pievienota. Produkti tiek pievienoti automātiski."
         form_addurl = Addurl()
         return render (request, "marga/addurltodb.html", {"reply": reply, "allurls": allurls, "form_addurl": form_addurl})
     else:
