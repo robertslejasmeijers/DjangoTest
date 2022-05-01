@@ -1,5 +1,6 @@
+import os
 from django.shortcuts import render, redirect
-from django.http import HttpRequest
+from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.db.models import F
@@ -7,6 +8,7 @@ from django.db.models import Q
 
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
 from rest_framework.viewsets import ModelViewSet
 
 from marga.serializers import ProductsSerializer
@@ -124,6 +126,13 @@ def searchdb (request):
     selection_count = (len(selection))
     return render (request, "marga/index.html", {"reply": reply, "form_search": form_search, "searched": searched, "orderby": orderby, "store3": store3, "selection_count": selection_count})
 
+@user_passes_test(lambda u: u.is_superuser)
+def loggg(request):
+    file_path = os.path.join("log", 'log.log')
+    f = open(file_path, 'r')
+    file_content = f.read()
+    f.close()
+    return HttpResponse(file_content, content_type="text/plain")
   
 
 def test(request):
@@ -156,7 +165,6 @@ def dbsortbypython (request):
         prices_and_products.sort(key=lambda k: (k[sort_by], k["date"]))
         print (prices_and_products)
     return render (request, "marga/test.html", {"prices_and_products": prices_and_products})
-
 
 class Productsview(ModelViewSet):
     queryset = Product.objects.all()

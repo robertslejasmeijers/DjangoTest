@@ -25,7 +25,6 @@ def ondemand_addinfotodb(userid):
             add_to_db(grabresults, userid)
     grabresults = grab_maxima_sirsniga()
     add_to_db(grabresults, userid)
-    logger.warning('ondemand_addinfotodb')
     return
 
 

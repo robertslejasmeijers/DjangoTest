@@ -16,7 +16,7 @@ services:
     ports:
       - 8000:8000
     container_name: rmscraper_container
-    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "uwsgi --socket mysite.sock --module rmscraper.wsgi --chmod-socket=666"
     depends_on:
       - db
       - redis
@@ -24,7 +24,7 @@ services:
     image: "redis:alpine"
   celery:
     build: .
-    command: celery -A rmscraper worker -l INFO
+    command: celery -A rmscraper worker -l info
     volumes:
       - .:/app
     depends_on:
@@ -50,6 +50,14 @@ services:
     environment:
      - RELAY_NETWORKS=:192.168.0.0/24
      - MAILNAME=marga
-    
+  nginx:
+    build: 
+      context: ./nginx
+    restart: always
+    container_name: nginx_container
+    volumes:
+      - .:/app
+    ports:
+      - "80:80"       
 volumes:
   data:

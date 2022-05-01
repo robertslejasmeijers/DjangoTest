@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include, re_path
+from django.urls import path, include
 from marga import views
 from rest_framework.routers import SimpleRouter
 
@@ -30,6 +30,8 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('users/', include('django.contrib.auth.urls')),
     path("test/", views.test),
+    path("loggg/", views.loggg),
+    
     
 ]
 
