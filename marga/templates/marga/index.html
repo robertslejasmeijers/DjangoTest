@@ -10,8 +10,12 @@
 
     {% if reply %}
 
-    <span class="navbar-text">Kopā {{ selection_count }} preces &nbsp;</span>
-    
+    {% if selection_count == 1 %}
+    <span class="navbar-text">Atlasīta {{ selection_count }} prece &nbsp;</span>
+    {% else %}
+    <span class="navbar-text">Atlasītas {{ selection_count }} preces &nbsp;</span>
+    {% endif %}
+        
     {% if reply.has_previous %}
     <li class="page-item">
     <a class="page-link" href="?page={{ reply.previous_page_number }}&name={{ searched }}&orderby={{ orderby }}&store3={{ store3 }}">&laquo;</a>
