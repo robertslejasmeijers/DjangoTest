@@ -176,8 +176,7 @@ LOGGING = {
     },
 }
 
-ADMINS = [("Roberts Lejasmeijers", "roberts.lejasmeijers@gmail.com")]
-SERVER_EMAIL = '"Marga" <roberts.lejasmeijers@gmail.com>'
+
 
 EMAIL_HOST = 'smtp'
 
