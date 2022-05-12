@@ -355,10 +355,9 @@ def grab_maxima_sirsniga():
 def add_to_db(results, userid):
    
     for res in results: 
-        reply_from_addtodb = 0
         if Product.objects.filter(user_id=userid, link_to_picture = res["link_to_picture"]).exists(): #ja taads produkts jau eksistee, 
             if res["price"] == float(Product.objects.filter(user_id=userid, link_to_picture = res["link_to_picture"])[0].prices.all().latest("date_time_grab").price): #un cena ir vienadaa ar jaunaako
-                reply_from_addtodb = 1 
+                continue
             else: #tad tiek panjemts produkta id, un db pievienota tikai cena
                 originalid = Product.objects.get(user_id=userid, link_to_picture = res["link_to_picture"]).id
                 pri = Price(        
@@ -369,7 +368,6 @@ def add_to_db(results, userid):
                     product_id = originalid,
                 )
                 pri.save()
-                reply_from_addtodb = 2
         else: #citaadi saglabaaja datu baazee info gan par produktu gan par cenu
             prod = Product(        
                 name = res["name"],
@@ -388,7 +386,7 @@ def add_to_db(results, userid):
                 product_id = prod.id,
             )
             pri.save()
-    return (reply_from_addtodb)
+    return
 
 
 def send_email(msg):
