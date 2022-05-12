@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from marga import views
 from rest_framework.routers import SimpleRouter
+from django.views.generic import RedirectView
 
 router = SimpleRouter()
 router.register("api/products", views.Productsview)
@@ -31,6 +32,7 @@ urlpatterns = [
     path('users/', include('django.contrib.auth.urls')),
     path("test/", views.test),
     path("loggg/", views.loggg),
+    path('favicon.ico', RedirectView.as_view(url='/static/favicon.ico')),
     
     
 ]
